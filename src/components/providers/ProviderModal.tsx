@@ -54,13 +54,13 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, y: "100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: "100%" }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-x-0 bottom-0 z-50 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-lg md:w-full"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div className="bg-card rounded-t-3xl md:rounded-3xl shadow-elevated max-h-[90vh] overflow-y-auto">
+            <div className="bg-card rounded-3xl shadow-elevated max-h-[90vh] w-full max-w-lg overflow-y-auto">
               {/* Header image */}
               <div className="relative h-48 md:h-56 bg-gradient-to-br from-primary/20 to-accent/20">
                 <img

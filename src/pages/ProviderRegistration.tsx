@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SERVICE_CATEGORIES } from "@/lib/constants";
 import { Upload, X, CheckCircle, AlertCircle } from "lucide-react";
@@ -34,8 +35,10 @@ const ProviderRegistration = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<File[]>([]);
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [isPremium, setIsPremium] = useState(false);
 
   const {
     register,
@@ -70,6 +73,19 @@ const ProviderRegistration = () => {
     setDocuments(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      setProfilePhoto(file);
+    } else {
+      toast.error("Veuillez sélectionner une image valide");
+    }
+  };
+
+  const removePhoto = () => {
+    setProfilePhoto(null);
+  };
+
   const addService = (service: string) => {
     if (!selectedServices.includes(service)) {
       const newServices = [...selectedServices, service];
@@ -93,6 +109,16 @@ const ProviderRegistration = () => {
     setIsSubmitting(true);
 
     try {
+      // Handle photo upload
+      let photoUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face";
+      if (profilePhoto) {
+        photoUrl = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.readAsDataURL(profilePhoto);
+        });
+      }
+
       // Simulate API call
       const providerData = {
         ...data,
@@ -105,13 +131,13 @@ const ProviderRegistration = () => {
         })),
         status: "pending", // pending, verified, rejected
         createdAt: new Date().toISOString(),
-        isPremium: false,
+        isPremium: isPremium,
         rating: 0,
         reviewCount: 0,
         isAvailable: true,
         priceRange: "À définir",
         availability: "À définir",
-        photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
+        photo: photoUrl,
       };
 
       // Save to localStorage for now
@@ -195,6 +221,63 @@ const ProviderRegistration = () => {
                     {errors.password && (
                       <p className="text-sm text-destructive mt-1">{errors.password.message}</p>
                     )}
+                  </div>
+
+                  {/* Profile Photo */}
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      {t("Photo de profil", "صورة الملف الشخصي")} (optionnel)
+                    </label>
+                    <div className="space-y-4">
+                      {profilePhoto ? (
+                        <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+                          <img
+                            src={URL.createObjectURL(profilePhoto)}
+                            alt="Profile preview"
+                            className="w-16 h-16 rounded-full object-cover"
+                          />
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{profilePhoto.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {(profilePhoto.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={removePhoto}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+                          <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {t("Cliquez pour sélectionner une photo", "انقر لتحديد صورة")}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            JPG, PNG (Max 5MB)
+                          </p>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoUpload}
+                            className="hidden"
+                            id="photo-upload"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="mt-4"
+                            onClick={() => document.getElementById("photo-upload")?.click()}
+                          >
+                            {t("Sélectionner une photo", "اختر صورة")}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -372,6 +455,29 @@ const ProviderRegistration = () => {
                       ))}
                     </div>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Premium Account Option */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-foreground">
+                      {t("Compte Premium", "حساب مميز")}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {t("Apparaissez en premier dans les résultats de recherche", "ظهر أولاً في نتائج البحث")}
+                    </p>
+                    <p className="text-sm font-medium text-primary mt-1">
+                      50 DT/mois
+                    </p>
+                  </div>
+                  <Switch
+                    checked={isPremium}
+                    onCheckedChange={setIsPremium}
+                  />
                 </div>
               </CardContent>
             </Card>

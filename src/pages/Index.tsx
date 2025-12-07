@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -22,8 +22,15 @@ const Index = () => {
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
   const { favorites } = useFavorites();
   const { t } = useLanguage();
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const favoriteProviders = PROVIDERS.filter((p) => favorites.includes(p.id));
+
+  useEffect(() => {
+    if (searchQuery && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [searchQuery]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -36,7 +43,9 @@ const Index = () => {
               onCategorySelect={setSelectedCategory}
             />
             <FeaturedProviders onViewDetails={setSelectedProvider} />
-            <ProviderList searchQuery={searchQuery} selectedCategory={selectedCategory} />
+            <div ref={resultsRef}>
+              <ProviderList searchQuery={searchQuery} selectedCategory={selectedCategory} />
+            </div>
           </>
         );
 
@@ -47,7 +56,9 @@ const Index = () => {
               selectedCategory={selectedCategory}
               onCategorySelect={setSelectedCategory}
             />
-            <ProviderList searchQuery={searchQuery} selectedCategory={selectedCategory} />
+            <div ref={resultsRef}>
+              <ProviderList searchQuery={searchQuery} selectedCategory={selectedCategory} />
+            </div>
           </div>
         );
 
