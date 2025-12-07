@@ -213,10 +213,10 @@ const ProviderDashboard = () => {
 
                       <div>
                         <h4 className="font-medium mb-2">{t("Services Proposés", "الخدمات المقدمة")}</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {provider.services?.map((service: string, index: number) => (
-                            <Badge key={index} variant="outline">{service}</Badge>
-                          ))}
+                        <div className="p-3 bg-muted/50 rounded-lg">
+                          <p className="text-sm text-foreground whitespace-pre-line">
+                            {provider.services}
+                          </p>
                         </div>
                       </div>
 

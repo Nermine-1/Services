@@ -124,21 +124,11 @@ export function ProviderCard({ provider, onViewDetails }: ProviderCardProps) {
             </div>
           </div>
 
-          {/* Services tags */}
-          <div className="flex flex-wrap gap-1.5 mt-3">
-            {provider.services.slice(0, 3).map((service, index) => (
-              <span
-                key={index}
-                className="text-xs px-2 py-1 bg-muted rounded-md text-muted-foreground"
-              >
-                {service}
-              </span>
-            ))}
-            {provider.services.length > 3 && (
-              <span className="text-xs px-2 py-1 text-primary font-medium">
-                +{provider.services.length - 3}
-              </span>
-            )}
+          {/* Services preview */}
+          <div className="mt-3">
+            <p className="text-xs text-muted-foreground line-clamp-2">
+              {provider.services ? provider.services.substring(0, 80) + (provider.services.length > 80 ? "..." : "") : "Services non spécifiés"}
+            </p>
           </div>
 
           {/* Action buttons */}

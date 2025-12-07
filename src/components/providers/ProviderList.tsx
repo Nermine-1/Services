@@ -36,7 +36,7 @@ export function ProviderList({ searchQuery, selectedCategory }: ProviderListProp
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(query) ||
-          p.services.some((s) => s.toLowerCase().includes(query)) ||
+          p.services.toLowerCase().includes(query) ||
           p.location.toLowerCase().includes(query) ||
           SERVICE_CATEGORIES.find((c) => c.id === p.category)?.name.toLowerCase().includes(query)
       );

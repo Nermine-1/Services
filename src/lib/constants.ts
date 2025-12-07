@@ -39,7 +39,7 @@ export type Provider = {
   whatsapp: string;
   location: string;
   description: string;
-  services: string[];
+  services: string;
   availability: string;
   isAvailable: boolean;
   isPremium: boolean;
@@ -63,7 +63,7 @@ export const PROVIDERS = [
     whatsapp: "+21698765432",
     location: "Tunis, La Marsa",
     description: "Électricien professionnel avec 15 ans d'expérience. Installation, dépannage, mise aux normes.",
-    services: ["Installation électrique", "Dépannage", "Mise aux normes", "Tableau électrique"],
+    services: "Installation électrique, Dépannage, Mise aux normes, Tableau électrique",
     availability: "Lun-Sam 8h-18h",
     isAvailable: true,
     isPremium: true,
@@ -80,7 +80,7 @@ export const PROVIDERS = [
     whatsapp: "+21655123456",
     location: "Tunis, Lac 2",
     description: "Service de nettoyage professionnel pour maisons et bureaux. Produits écologiques.",
-    services: ["Nettoyage maison", "Nettoyage bureau", "Nettoyage après travaux", "Repassage"],
+    services: "Nettoyage maison, Nettoyage bureau, Nettoyage après travaux, Repassage",
     availability: "Tous les jours 7h-20h",
     isAvailable: true,
     isPremium: false,
@@ -97,7 +97,7 @@ export const PROVIDERS = [
     whatsapp: "+21622987654",
     location: "Sousse, Hammam Sousse",
     description: "Plombier qualifié. Réparation, installation sanitaire, chauffage.",
-    services: ["Réparation fuite", "Installation sanitaire", "Chauffe-eau", "Débouchage"],
+    services: "Réparation fuite, Installation sanitaire, Chauffe-eau, Débouchage",
     availability: "Lun-Ven 8h-17h",
     isAvailable: false,
     isPremium: true,
@@ -114,7 +114,7 @@ export const PROVIDERS = [
     whatsapp: "+21699456789",
     location: "Tunis, Menzah 6",
     description: "Esthéticienne diplômée. Soins visage, manucure, maquillage, coiffure à domicile.",
-    services: ["Soins visage", "Manucure/Pédicure", "Maquillage", "Coiffure"],
+    services: "Soins visage, Manucure/Pédicure, Maquillage, Coiffure",
     availability: "Sur rendez-vous",
     isAvailable: true,
     isPremium: true,
@@ -131,7 +131,7 @@ export const PROVIDERS = [
     whatsapp: "+21650321987",
     location: "Sfax, Centre ville",
     description: "Technicien informatique. Réparation PC/Mac, installation réseau, récupération données.",
-    services: ["Réparation PC", "Installation réseau", "Récupération données", "Formation"],
+    services: "Réparation PC, Installation réseau, Récupération données, Formation",
     availability: "Lun-Sam 9h-19h",
     isAvailable: true,
     isPremium: false,
@@ -148,7 +148,7 @@ export const PROVIDERS = [
     whatsapp: "+21627654321",
     location: "Tunis, Carthage",
     description: "Paysagiste professionnelle. Création jardins, entretien espaces verts, arrosage automatique.",
-    services: ["Création jardin", "Entretien", "Arrosage automatique", "Taille arbres"],
+    services: "Création jardin, Entretien, Arrosage automatique, Taille arbres",
     availability: "Lun-Ven 7h-16h",
     isAvailable: true,
     isPremium: false,

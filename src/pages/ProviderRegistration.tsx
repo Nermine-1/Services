@@ -24,9 +24,11 @@ const providerSchema = z.object({
   category: z.string().min(1, "Veuillez sélectionner une catégorie"),
   location: z.string().min(2, "Veuillez entrer une localisation"),
   description: z.string().min(10, "La description doit contenir au moins 10 caractères"),
-  services: z.array(z.string()).min(1, "Veuillez sélectionner au moins un service"),
+  services: z.string().min(10, "Veuillez décrire vos services (au moins 10 caractères)"),
   certifications: z.string().optional(),
   serviceArea: z.string().min(2, "Veuillez entrer une zone de service"),
+  priceRange: z.string().min(1, "Veuillez entrer une fourchette de prix"),
+  availability: z.string().min(1, "Veuillez entrer vos horaires de disponibilité"),
 });
 
 type ProviderFormData = z.infer<typeof providerSchema>;
@@ -37,7 +39,7 @@ const ProviderRegistration = () => {
   const [documents, setDocuments] = useState<File[]>([]);
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [servicesText, setServicesText] = useState<string>("");
   const [isPremium, setIsPremium] = useState(false);
 
   const {
@@ -49,7 +51,9 @@ const ProviderRegistration = () => {
   } = useForm<ProviderFormData>({
     resolver: zodResolver(providerSchema),
     defaultValues: {
-      services: [],
+      services: "",
+      priceRange: "",
+      availability: "",
     },
   });
 
@@ -86,19 +90,6 @@ const ProviderRegistration = () => {
     setProfilePhoto(null);
   };
 
-  const addService = (service: string) => {
-    if (!selectedServices.includes(service)) {
-      const newServices = [...selectedServices, service];
-      setSelectedServices(newServices);
-      setValue("services", newServices);
-    }
-  };
-
-  const removeService = (service: string) => {
-    const newServices = selectedServices.filter(s => s !== service);
-    setSelectedServices(newServices);
-    setValue("services", newServices);
-  };
 
   const onSubmit = async (data: ProviderFormData) => {
     if (documents.length === 0) {
@@ -135,8 +126,8 @@ const ProviderRegistration = () => {
         rating: 0,
         reviewCount: 0,
         isAvailable: true,
-        priceRange: "À définir",
-        availability: "À définir",
+        priceRange: data.priceRange,
+        availability: data.availability,
         photo: photoUrl,
       };
 
@@ -354,43 +345,48 @@ const ProviderRegistration = () => {
                   <Input {...register("certifications")} placeholder="Diplôme, certificat..." />
                 </div>
 
-                {/* Services Selection */}
-                {selectedCategory && (
+                {/* Services Description */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">
+                    {t("Services proposés", "الخدمات المقدمة")}
+                  </label>
+                  <Textarea
+                    {...register("services")}
+                    placeholder={t("Décrivez les services que vous proposez ", "صف الخدمات التي تقدمها)")}
+                    rows={4}
+                  />
+                  {errors.services && (
+                    <p className="text-sm text-destructive mt-1">{errors.services.message}</p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      {t("Services proposés", "الخدمات المقدمة")}
+                      {t("Fourchette de prix", "نطاق الأسعار")}
                     </label>
-                    <div className="space-y-2">
-                      <Input
-                        placeholder={t("Ajouter un service...", "أضف خدمة...")}
-                        onKeyPress={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            const value = (e.target as HTMLInputElement).value.trim();
-                            if (value) {
-                              addService(value);
-                              (e.target as HTMLInputElement).value = "";
-                            }
-                          }
-                        }}
-                      />
-                      <div className="flex flex-wrap gap-2">
-                        {selectedServices.map((service) => (
-                          <Badge key={service} variant="secondary" className="flex items-center gap-1">
-                            {service}
-                            <X
-                              className="h-3 w-3 cursor-pointer hover:text-destructive"
-                              onClick={() => removeService(service)}
-                            />
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    {errors.services && (
-                      <p className="text-sm text-destructive mt-1">{errors.services.message}</p>
+                    <Input
+                      {...register("priceRange")}
+                      placeholder="50-150 DT"
+                    />
+                    {errors.priceRange && (
+                      <p className="text-sm text-destructive mt-1">{errors.priceRange.message}</p>
                     )}
                   </div>
-                )}
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      {t("Horaires de disponibilité", "أوقات التوفر")}
+                    </label>
+                    <Input
+                      {...register("availability")}
+                      placeholder="Lun-Sam 8h-18h , sur rendez-vous"
+                    />
+                    {errors.availability && (
+                      <p className="text-sm text-destructive mt-1">{errors.availability.message}</p>
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
 

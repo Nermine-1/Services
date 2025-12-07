@@ -317,8 +317,17 @@ const AdminDashboard = () => {
                                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                           <h3 className="font-semibold mb-2">{t("Informations Personnelles", "المعلومات الشخصية")}</h3>
-                                          <p><strong>{t("Nom:", "الاسم:")}</strong> {selectedProvider.name}</p>
-                                          <p><strong>{t("Email:", "البريد:")}</strong> {selectedProvider.email}</p>
+                                          <div className="flex items-center gap-4 mb-4">
+                                            <img
+                                              src={selectedProvider.photo || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face"}
+                                              alt={selectedProvider.name}
+                                              className="w-16 h-16 rounded-full object-cover"
+                                            />
+                                            <div>
+                                              <p className="font-medium">{selectedProvider.name}</p>
+                                              <p className="text-sm text-muted-foreground">{selectedProvider.email}</p>
+                                            </div>
+                                          </div>
                                           <p><strong>{t("Téléphone:", "الهاتف:")}</strong> {selectedProvider.phone}</p>
                                           <p><strong>{t("Localisation:", "الموقع:")}</strong> {selectedProvider.location}</p>
                                         </div>
@@ -329,6 +338,7 @@ const AdminDashboard = () => {
                                           {selectedProvider.certifications && (
                                             <p><strong>{t("Certifications:", "الشهادات:")}</strong> {selectedProvider.certifications}</p>
                                           )}
+                                          <p><strong>{t("Type de compte:", "نوع الحساب:")}</strong> {selectedProvider.isPremium ? "Premium" : "Standard"}</p>
                                         </div>
                                       </div>
 
@@ -339,25 +349,38 @@ const AdminDashboard = () => {
 
                                       <div>
                                         <h3 className="font-semibold mb-2">{t("Services Proposés", "الخدمات المقدمة")}</h3>
-                                        <div className="flex flex-wrap gap-2">
-                                          {selectedProvider.services.map((service, index) => (
-                                            <Badge key={index} variant="secondary">{service}</Badge>
-                                          ))}
+                                        <div className="p-3 bg-muted/50 rounded-lg">
+                                          <p className="text-sm text-foreground whitespace-pre-line">
+                                            {selectedProvider.services}
+                                          </p>
                                         </div>
                                       </div>
 
                                       <div>
-                                        <h3 className="font-semibold mb-2">{t("Documents", "الوثائق")}</h3>
+                                        <h3 className="font-semibold mb-2">{t("Documents Justificatifs", "الوثائق المبررة")}</h3>
                                         <div className="space-y-2">
                                           {selectedProvider.documents.map((doc, index) => (
-                                            <div key={index} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                                              <FileText className="h-5 w-5 text-muted-foreground" />
-                                              <div>
-                                                <p className="text-sm font-medium">{doc.name}</p>
-                                                <p className="text-xs text-muted-foreground">
-                                                  {(doc.size / 1024 / 1024).toFixed(2)} MB
-                                                </p>
+                                            <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                                              <div className="flex items-center gap-3">
+                                                <FileText className="h-5 w-5 text-muted-foreground" />
+                                                <div>
+                                                  <p className="text-sm font-medium">{doc.name}</p>
+                                                  <p className="text-xs text-muted-foreground">
+                                                    {doc.type} • {(doc.size / 1024 / 1024).toFixed(2)} MB
+                                                  </p>
+                                                </div>
                                               </div>
+                                              <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => {
+                                                  // In a real app, this would open/download the file
+                                                  toast.info(`Visualisation de ${doc.name} - Fonctionnalité à implémenter`);
+                                                }}
+                                              >
+                                                <Eye className="h-4 w-4 mr-1" />
+                                                {t("Voir", "عرض")}
+                                              </Button>
                                             </div>
                                           ))}
                                         </div>

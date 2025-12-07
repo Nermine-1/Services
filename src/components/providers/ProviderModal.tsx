@@ -175,18 +175,10 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
                   <h3 className="font-semibold text-foreground mb-3">
                     {t("Services proposés", "الخدمات المقدمة")}
                   </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {provider.services && provider.services.length > 0 ? (
-                      provider.services.map((service, index) => (
-                        <Badge key={index} variant="secondary" className="text-sm">
-                          {service}
-                        </Badge>
-                      ))
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        {t("Aucun service spécifié", "لا توجد خدمات محددة")}
-                      </p>
-                    )}
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <p className="text-sm text-foreground whitespace-pre-line">
+                      {provider.services || t("Aucun service spécifié", "لا توجد خدمات محددة")}
+                    </p>
                   </div>
                 </div>
 
