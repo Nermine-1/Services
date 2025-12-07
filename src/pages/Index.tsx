@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { HeroSection } from "@/components/home/HeroSection";
@@ -14,6 +15,7 @@ import { Heart, User, Settings } from "lucide-react";
 import { ProviderCard } from "@/components/providers/ProviderCard";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("home");
@@ -136,9 +138,20 @@ const Index = () => {
                     "انضم إلى شبكتنا وطوّر نشاطك."
                   )}
                 </p>
-                <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
-                  {t("S'inscrire", "التسجيل")}
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => navigate('/provider-registration')}
+                    className="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors flex-1"
+                  >
+                    {t("S'inscrire", "التسجيل")}
+                  </button>
+                  <button
+                    onClick={() => navigate('/provider-login')}
+                    className="border border-primary text-primary px-4 py-2 rounded-lg font-medium hover:bg-primary/10 transition-colors flex-1"
+                  >
+                    {t("Se connecter", "دخول")}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

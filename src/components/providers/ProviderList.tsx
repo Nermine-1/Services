@@ -21,7 +21,9 @@ export function ProviderList({ searchQuery, selectedCategory }: ProviderListProp
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
 
   const filteredProviders = useMemo(() => {
-    let result = [...PROVIDERS];
+    // Combine static providers with verified providers from localStorage
+    const verifiedProviders = JSON.parse(localStorage.getItem("verifiedProviders") || "[]");
+    let result = [...PROVIDERS, ...verifiedProviders];
 
     // Filter by category
     if (selectedCategory) {

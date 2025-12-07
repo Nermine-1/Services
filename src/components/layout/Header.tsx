@@ -7,8 +7,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
-  onSearch: (query: string) => void;
-  searchQuery: string;
+  onSearch?: (query: string) => void;
+  searchQuery?: string;
 }
 
 export function Header({ onSearch, searchQuery }: HeaderProps) {
@@ -37,37 +37,39 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
           </motion.div>
 
           {/* Search Bar - Desktop */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={cn(
-              "hidden md:flex flex-1 max-w-xl mx-4 relative",
-              isSearchFocused && "z-50"
-            )}
-          >
-            <div
+          {onSearch && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
               className={cn(
-                "relative w-full transition-all duration-300",
-                isSearchFocused && "scale-[1.02]"
+                "hidden md:flex flex-1 max-w-xl mx-4 relative",
+                isSearchFocused && "z-50"
               )}
             >
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder={t("Rechercher un service ou prestataire...", "ابحث عن خدمة أو مزود...")}
-                value={searchQuery}
-                onChange={(e) => onSearch(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
+              <div
                 className={cn(
-                  "w-full h-12 pl-12 pr-4 rounded-xl bg-muted/50 border-2 border-transparent",
-                  "text-foreground placeholder:text-muted-foreground",
-                  "focus:outline-none focus:border-primary/50 focus:bg-background",
-                  "transition-all duration-300"
+                  "relative w-full transition-all duration-300",
+                  isSearchFocused && "scale-[1.02]"
                 )}
-              />
-            </div>
-          </motion.div>
+              >
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder={t("Rechercher un service ou prestataire...", "ابحث عن خدمة أو مزود...")}
+                  value={searchQuery || ""}
+                  onChange={(e) => onSearch(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  className={cn(
+                    "w-full h-12 pl-12 pr-4 rounded-xl bg-muted/50 border-2 border-transparent",
+                    "text-foreground placeholder:text-muted-foreground",
+                    "focus:outline-none focus:border-primary/50 focus:bg-background",
+                    "transition-all duration-300"
+                  )}
+                />
+              </div>
+            </motion.div>
+          )}
 
           {/* Actions */}
           <div className="flex items-center gap-2">
@@ -114,18 +116,20 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
         </div>
 
         {/* Mobile Search */}
-        <div className="mt-3 md:hidden">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder={t("Rechercher...", "ابحث...")}
-              value={searchQuery}
-              onChange={(e) => onSearch(e.target.value)}
-              className="w-full h-11 pl-12 pr-4 rounded-xl bg-muted/50 border-2 border-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-all"
-            />
+        {onSearch && (
+          <div className="mt-3 md:hidden">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder={t("Rechercher...", "ابحث...")}
+                value={searchQuery || ""}
+                onChange={(e) => onSearch(e.target.value)}
+                className="w-full h-11 pl-12 pr-4 rounded-xl bg-muted/50 border-2 border-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-all"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Mobile Menu */}

@@ -8,6 +8,10 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ProviderRegistration from "./pages/ProviderRegistration";
+import AdminDashboard from "./pages/AdminDashboard";
+import ProviderLogin from "./pages/ProviderLogin";
+import ProviderDashboard from "./pages/ProviderDashboard";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +26,10 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/provider-registration" element={<ProviderRegistration />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/provider-login" element={<ProviderLogin />} />
+                <Route path="/provider-dashboard" element={<ProviderDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
