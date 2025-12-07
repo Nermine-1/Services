@@ -11,7 +11,10 @@ interface HeaderProps {
   searchQuery?: string;
 }
 
+import { useNavigate } from "react-router-dom";
+
 export function Header({ onSearch, searchQuery }: HeaderProps) {
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -25,7 +28,8 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => navigate("/")}
           >
             <div className="h-10 w-10 rounded-xl bg-gradient-hero flex items-center justify-center shadow-glow">
               <span className="text-xl font-bold text-white">S</span>

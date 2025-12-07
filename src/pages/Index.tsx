@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { FeaturedProviders } from "@/components/home/FeaturedProviders";
@@ -51,7 +52,7 @@ const Index = () => {
               onCategorySelect={setSelectedCategory}
             />
             <FeaturedProviders onViewDetails={setSelectedProvider} />
-            <div ref={resultsRef}>
+            <div ref={resultsRef} className="scroll-mt-24">
               <ProviderList searchQuery={searchQuery} selectedCategory={selectedCategory} />
             </div>
           </>
@@ -184,7 +185,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header onSearch={setSearchQuery} searchQuery={searchQuery} />
-      
+
       <main className="relative">
         <AnimatePresence mode="wait">
           <motion.div
@@ -199,6 +200,7 @@ const Index = () => {
         </AnimatePresence>
       </main>
 
+      <Footer />
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
 
       <ProviderModal provider={selectedProvider} onClose={() => setSelectedProvider(null)} />
