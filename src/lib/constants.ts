@@ -28,6 +28,29 @@ export const SERVICE_CATEGORIES = [
   { id: "catering", name: "Traiteur", nameAr: "تموين", icon: UtensilsCrossed, color: "from-red-500 to-orange-400" },
 ];
 
+export type Provider = {
+  id: string;
+  name: string;
+  photo: string;
+  category: string;
+  rating: number;
+  reviewCount: number;
+  phone: string;
+  whatsapp: string;
+  location: string;
+  description: string;
+  services: string[];
+  availability: string;
+  isAvailable: boolean;
+  isPremium: boolean;
+  priceRange: string;
+  certifications?: string;
+  serviceArea?: string;
+  status?: "pending" | "verified" | "rejected";
+  createdAt?: string;
+  verifiedAt?: string;
+};
+
 export const PROVIDERS = [
   {
     id: "1",
@@ -133,5 +156,4 @@ export const PROVIDERS = [
   },
 ];
 
-export type Provider = typeof PROVIDERS[0];
 export type Category = typeof SERVICE_CATEGORIES[0];

@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { PROVIDERS, SERVICE_CATEGORIES } from "@/lib/constants";
+import { PROVIDERS, SERVICE_CATEGORIES, Provider } from "@/lib/constants";
 import {
   Users,
   CheckCircle,
@@ -18,21 +18,13 @@ import {
   Eye,
   FileText,
   BarChart3,
-  Shield
+  Shield,
+  Star,
+  Crown
 } from "lucide-react";
 import { toast } from "sonner";
 
-interface PendingProvider {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  category: string;
-  location: string;
-  description: string;
-  services: string[];
-  certifications?: string;
-  serviceArea: string;
+interface PendingProvider extends Omit<Provider, 'rating' | 'reviewCount' | 'isAvailable' | 'isPremium' | 'priceRange' | 'availability' | 'photo' | 'whatsapp'> {
   documents: { name: string; size: number; type: string }[];
   status: "pending" | "verified" | "rejected";
   createdAt: string;
@@ -41,7 +33,7 @@ interface PendingProvider {
 const AdminDashboard = () => {
   const { t } = useLanguage();
   const [pendingProviders, setPendingProviders] = useState<PendingProvider[]>([]);
-  const [verifiedProviders, setVerifiedProviders] = useState<any[]>([]);
+  const [verifiedProviders, setVerifiedProviders] = useState<Provider[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<PendingProvider | null>(null);
 
   useEffect(() => {
@@ -57,14 +49,20 @@ const AdminDashboard = () => {
   const currentStats = {
     totalProviders: verifiedProviders.length,
     pendingVerifications: pendingProviders.length,
-    totalRevenue: 12500, // Mock data
-    monthlyGrowth: 12.5,
+    totalRevenue: verifiedProviders.length * 150 + pendingProviders.length * 50, // Revenue from ads per provider
+    monthlyGrowth: ((verifiedProviders.length / Math.max(PROVIDERS.length + verifiedProviders.length, 1)) * 100).toFixed(1),
+    activeProviders: verifiedProviders.filter(p => p.isAvailable).length,
+    premiumProviders: verifiedProviders.filter(p => p.isPremium).length,
+    totalReviews: verifiedProviders.reduce((sum, p) => sum + p.reviewCount, 0),
+    averageRating: verifiedProviders.length > 0
+      ? (verifiedProviders.reduce((sum, p) => sum + p.rating, 0) / verifiedProviders.length).toFixed(1)
+      : 0,
   };
 
   const handleVerifyProvider = (provider: PendingProvider) => {
-    const verifiedProvider = {
+    const verifiedProvider: Provider = {
       ...provider,
-      status: "verified" as const,
+      status: "verified",
       verifiedAt: new Date().toISOString(),
       isPremium: false,
       rating: 0,
@@ -73,6 +71,7 @@ const AdminDashboard = () => {
       priceRange: "À définir",
       availability: "À définir",
       photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
+      whatsapp: provider.phone, // Use phone as whatsapp
     };
 
     // Remove from pending
@@ -147,14 +146,14 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t("Revenus Totaux", "إجمالي الإيرادات")}
+                {t("Revenus Publicitaires", "إيرادات الإعلانات")}
               </CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalRevenue} DT</div>
               <p className="text-xs text-muted-foreground">
-                +15% ce mois
+                {stats.activeProviders} {t("prestataires actifs", "مزود نشط")}
               </p>
             </CardContent>
           </Card>
@@ -162,14 +161,62 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t("Croissance", "النمو")}
+                {t("Note Moyenne", "متوسط التقييم")}
+              </CardTitle>
+              <Star className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.averageRating}</div>
+              <p className="text-xs text-muted-foreground">
+                {stats.totalReviews} {t("avis totaux", "إجمالي التقييمات")}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Additional Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {t("Prestataires Actifs", "المزودون النشطون")}
+              </CardTitle>
+              <CheckCircle className="h-4 w-4 text-success" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.activeProviders}</div>
+              <p className="text-xs text-muted-foreground">
+                {((stats.activeProviders / Math.max(stats.totalProviders, 1)) * 100).toFixed(0)}% {t("du total", "من المجموع")}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {t("Prestataires Premium", "المزودون المميزون")}
+              </CardTitle>
+              <Crown className="h-4 w-4 text-amber-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.premiumProviders}</div>
+              <p className="text-xs text-muted-foreground">
+                {t("Revenus supplémentaires", "إيرادات إضافية")}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {t("Croissance Mensuelle", "النمو الشهري")}
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">+{stats.monthlyGrowth}%</div>
               <p className="text-xs text-muted-foreground">
-                {t("Par rapport au mois dernier", "مقارنة بالشهر الماضي")}
+                {t("Nouveaux prestataires", "مزودون جدد")}
               </p>
             </CardContent>
           </Card>
@@ -416,10 +463,27 @@ const AdminDashboard = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4 mr-1" />
-                            {t("Voir", "عرض")}
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Eye className="h-4 w-4 mr-1" />
+                              {t("Voir", "عرض")}
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                if (confirm(t("Êtes-vous sûr de vouloir supprimer ce prestataire ?", "هل أنت متأكد من حذف هذا المزود؟"))) {
+                                  const updatedVerified = verifiedProviders.filter(p => p.id !== provider.id);
+                                  setVerifiedProviders(updatedVerified);
+                                  localStorage.setItem("verifiedProviders", JSON.stringify(updatedVerified));
+                                  toast.success("Prestataire supprimé");
+                                }
+                              }}
+                            >
+                              <XCircle className="h-4 w-4 mr-1" />
+                              {t("Supprimer", "حذف")}
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -434,54 +498,139 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("Revenus par Catégorie", "الإيرادات حسب الفئة")}</CardTitle>
+                  <CardTitle>{t("Revenus Publicitaires", "إيرادات الإعلانات")}</CardTitle>
+                  <CardDescription>
+                    {t("Revenus générés par les prestataires vérifiés", "الإيرادات المولدة من المزودين المعتمدين")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {SERVICE_CATEGORIES.slice(0, 5).map((category) => (
-                      <div key={category.id} className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="w-4 h-4 rounded"
-                            style={{ backgroundColor: category.color.split(' ')[1] }}
-                          />
-                          <span className="text-sm">{category.name}</span>
-                        </div>
-                        <span className="font-medium">
-                          {Math.floor(Math.random() * 3000) + 500} DT
-                        </span>
+                    <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                      <div>
+                        <p className="text-sm font-medium">{t("Revenus par prestataire", "الإيرادات لكل مزود")}</p>
+                        <p className="text-xs text-muted-foreground">150 DT/mois</p>
                       </div>
-                    ))}
+                      <span className="text-2xl font-bold text-primary">
+                        {stats.totalProviders * 150} DT
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                      <div>
+                        <p className="text-sm font-medium">{t("Bonus prestataires premium", "مكافآت المزودين المميزين")}</p>
+                        <p className="text-xs text-muted-foreground">50 DT/mois chacun</p>
+                      </div>
+                      <span className="text-2xl font-bold text-amber-600">
+                        {stats.premiumProviders * 50} DT
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-success/10 rounded-lg border border-success/20">
+                      <div>
+                        <p className="text-sm font-medium">{t("Total des revenus", "إجمالي الإيرادات")}</p>
+                        <p className="text-xs text-muted-foreground">Ce mois</p>
+                      </div>
+                      <span className="text-2xl font-bold text-success">
+                        {stats.totalRevenue} DT
+                      </span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("Activité Récente", "النشاط الأخير")}</CardTitle>
+                  <CardTitle>{t("Répartition par Catégorie", "التوزيع حسب الفئة")}</CardTitle>
+                  <CardDescription>
+                    {t("Nombre de prestataires par secteur d'activité", "عدد المزودين حسب قطاع النشاط")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-success" />
-                      <div>
-                        <p className="text-sm font-medium">Ahmed Ben Salem approuvé</p>
-                        <p className="text-xs text-muted-foreground">Il y a 2 heures</p>
-                      </div>
+                    {SERVICE_CATEGORIES.map((category) => {
+                      const count = verifiedProviders.filter(p => p.category === category.id).length;
+                      const percentage = stats.totalProviders > 0 ? ((count / stats.totalProviders) * 100).toFixed(1) : 0;
+                      return (
+                        <div key={category.id} className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-4 h-4 rounded"
+                              style={{ backgroundColor: category.color.split(' ')[1] }}
+                            />
+                            <span className="text-sm">{category.name}</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="font-medium">{count}</span>
+                            <span className="text-xs text-muted-foreground ml-2">({percentage}%)</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("Performance Globale", "الأداء العام")}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{t("Taux de satisfaction client", "معدل رضا العميل")}</span>
+                      <span className="font-medium">94.2%</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Users className="h-5 w-5 text-primary" />
-                      <div>
-                        <p className="text-sm font-medium">Nouveau prestataire inscrit</p>
-                        <p className="text-xs text-muted-foreground">Il y a 4 heures</p>
-                      </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{t("Temps de réponse moyen", "متوسط وقت الرد")}</span>
+                      <span className="font-medium">2.3h</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <DollarSign className="h-5 w-5 text-success" />
-                      <div>
-                        <p className="text-sm font-medium">Paiement reçu: 150 DT</p>
-                        <p className="text-xs text-muted-foreground">Il y a 6 heures</p>
-                      </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{t("Taux de conversion", "معدل التحويل")}</span>
+                      <span className="font-medium">67.8%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("Activité du Mois", "نشاط الشهر")}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{t("Nouveaux prestataires", "مزودون جدد")}</span>
+                      <span className="font-medium">+{stats.totalProviders}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{t("Demandes traitées", "الطلبات المعالجة")}</span>
+                      <span className="font-medium">{stats.pendingVerifications + stats.totalProviders}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{t("Revenus générés", "الإيرادات المولدة")}</span>
+                      <span className="font-medium">{stats.totalRevenue} DT</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("Prévisions", "التوقعات")}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{t("Croissance prévue", "النمو المتوقع")}</span>
+                      <span className="font-medium text-success">+{stats.monthlyGrowth}%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{t("Revenus projetés", "الإيرادات المتوقعة")}</span>
+                      <span className="font-medium">{Math.round(stats.totalRevenue * 1.15)} DT</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">{t("Objectif mensuel", "الهدف الشهري")}</span>
+                      <span className="font-medium">25,000 DT</span>
                     </div>
                   </div>
                 </CardContent>

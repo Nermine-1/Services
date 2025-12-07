@@ -97,6 +97,7 @@ const ProviderRegistration = () => {
       const providerData = {
         ...data,
         id: Date.now().toString(),
+        whatsapp: data.phone, // Use phone as whatsapp for now
         documents: documents.map(doc => ({
           name: doc.name,
           size: doc.size,

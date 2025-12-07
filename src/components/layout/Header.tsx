@@ -84,6 +84,25 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
               <span className="sr-only">Toggle language</span>
             </Button>
 
+            {/* Provider Actions */}
+            <div className="hidden md:flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => window.location.href = '/provider-login'}
+                className="text-sm"
+              >
+                {t("Se connecter", "دخول")}
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => window.location.href = '/provider-registration'}
+                className="text-sm"
+              >
+                {t("Devenir prestataire", "كن مزود خدمة")}
+              </Button>
+            </div>
+
             {/* Theme Toggle */}
             <Button variant="ghost" size="icon" onClick={toggleTheme}>
               <AnimatePresence mode="wait">

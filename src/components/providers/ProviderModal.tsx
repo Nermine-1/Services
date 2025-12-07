@@ -158,10 +158,12 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
                       {category.name}
                     </Badge>
                   )}
-                  <span className="text-sm font-semibold text-foreground">{provider.priceRange}</span>
+                  <span className="text-sm font-semibold text-foreground">
+                    {provider.priceRange && provider.priceRange !== "À définir" ? provider.priceRange : t("Prix sur demande", "السعر عند الطلب")}
+                  </span>
                   <span className="flex items-center gap-1 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
-                    {provider.availability}
+                    {provider.availability && provider.availability !== "À définir" ? provider.availability : t("Horaires à définir", "الأوقات المحددة")}
                   </span>
                 </div>
 
@@ -174,16 +176,44 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
                     {t("Services proposés", "الخدمات المقدمة")}
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {provider.services.map((service, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1.5 bg-muted rounded-lg text-sm text-foreground"
-                      >
-                        {service}
-                      </span>
-                    ))}
+                    {provider.services && provider.services.length > 0 ? (
+                      provider.services.map((service, index) => (
+                        <Badge key={index} variant="secondary" className="text-sm">
+                          {service}
+                        </Badge>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        {t("Aucun service spécifié", "لا توجد خدمات محددة")}
+                      </p>
+                    )}
                   </div>
                 </div>
+
+                {/* Certifications */}
+                {provider.certifications && provider.certifications.trim() && (
+                  <div className="mb-6">
+                    <h3 className="font-semibold text-foreground mb-3">
+                      {t("Certifications", "الشهادات")}
+                    </h3>
+                    <div className="p-4 bg-muted/50 rounded-lg">
+                      <p className="text-sm text-foreground">{provider.certifications}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Service Area */}
+                {provider.serviceArea && (
+                  <div className="mb-6">
+                    <h3 className="font-semibold text-foreground mb-3">
+                      {t("Zone de service", "منطقة الخدمة")}
+                    </h3>
+                    <div className="flex items-center gap-2 p-4 bg-muted/50 rounded-lg">
+                      <MapPin className="h-5 w-5 text-muted-foreground" />
+                      <span className="text-sm text-foreground">{provider.serviceArea}</span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Phone */}
                 <div className="mb-6 p-4 bg-muted rounded-xl">
