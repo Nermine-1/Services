@@ -1,0 +1,20 @@
+{
+  "name": "Khedma - Services à domicile",
+  "short_name": "Khedma",
+  "description": "Trouvez les meilleurs prestataires de services en Tunisie",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF9F7",
+  "theme_color": "#E07A5F",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["business", "lifestyle", "utilities"],
+  "lang": "fr",
+  "dir": "ltr"
+}
