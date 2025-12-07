@@ -41,6 +41,13 @@ const Index = () => {
     }
   }, [selectedCategory]);
 
+  const handleCategorySelect = (category: string | null) => {
+    setSelectedCategory(category);
+    if (category) {
+      setSearchQuery(""); // Clear search to ensure we see category results
+    }
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "home":
@@ -49,7 +56,7 @@ const Index = () => {
             <HeroSection />
             <CategoryGrid
               selectedCategory={selectedCategory}
-              onCategorySelect={setSelectedCategory}
+              onCategorySelect={handleCategorySelect}
             />
             <FeaturedProviders onViewDetails={setSelectedProvider} />
             <div ref={resultsRef} className="scroll-mt-24">
@@ -63,9 +70,9 @@ const Index = () => {
           <div className="pt-4">
             <CategoryGrid
               selectedCategory={selectedCategory}
-              onCategorySelect={setSelectedCategory}
+              onCategorySelect={handleCategorySelect}
             />
-            <div ref={resultsRef}>
+            <div ref={resultsRef} className="scroll-mt-24">
               <ProviderList searchQuery={searchQuery} selectedCategory={selectedCategory} />
             </div>
           </div>
