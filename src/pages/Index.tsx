@@ -29,8 +29,16 @@ const Index = () => {
   useEffect(() => {
     if (searchQuery && resultsRef.current) {
       resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Reset category filter when searching
+      setSelectedCategory(null);
     }
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (selectedCategory && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [selectedCategory]);
 
   const renderContent = () => {
     switch (activeTab) {

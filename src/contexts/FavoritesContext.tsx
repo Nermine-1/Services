@@ -10,12 +10,12 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(undefin
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = useState<string[]>(() => {
-    const saved = localStorage.getItem("khedma-favorites");
+    const saved = localStorage.getItem("serveeny-favorites");
     return saved ? JSON.parse(saved) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem("khedma-favorites", JSON.stringify(favorites));
+    localStorage.setItem("serveeny-favorites", JSON.stringify(favorites));
   }, [favorites]);
 
   const toggleFavorite = (id: string) => {

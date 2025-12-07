@@ -28,11 +28,11 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
             className="flex items-center gap-2"
           >
             <div className="h-10 w-10 rounded-xl bg-gradient-hero flex items-center justify-center shadow-glow">
-              <span className="text-xl font-bold text-white">K</span>
+              <span className="text-xl font-bold text-white">S</span>
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-foreground">Khedma</h1>
-              <p className="text-xs text-muted-foreground">{t("Services à domicile", "خدمات منزلية")}</p>
+              <h1 className="text-xl font-bold text-foreground">Serveeny</h1>
+              <p className="text-xs text-muted-foreground">{t("Votre service, votre besoin", "خدمات منزلية")}</p>
             </div>
           </motion.div>
 

@@ -36,7 +36,7 @@ const ProviderLogin = () => {
 
     try {
       // Check if admin login
-      if (data.email === "admin@khedma.tn" && data.password === "admin123") {
+      if (data.email === "admin@serveeny.tn" && data.password === "admin123") {
         localStorage.setItem("userRole", "admin");
         localStorage.setItem("userEmail", data.email);
         toast.success("Connexion admin réussie !");
@@ -135,7 +135,7 @@ const ProviderLogin = () => {
                   {t("Connexion Admin", "دخول الإدارة")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Email: admin@khedma.tn<br />
+                  Email: admin@serveeny.tn<br />
                   Mot de passe: admin123
                 </p>
               </div>
