@@ -16,7 +16,7 @@ interface ProviderCardProps {
 export function ProviderCard({ provider, onViewDetails }: ProviderCardProps) {
   const { toggleFavorite, isFavorite } = useFavorites();
   const { t } = useLanguage();
-  const favorite = isFavorite(provider.id);
+  const favorite = isFavorite(provider._id);
   const category = SERVICE_CATEGORIES.find((c) => c.id === provider.category);
 
   const handleWhatsApp = (e: React.MouseEvent) => {
@@ -55,7 +55,7 @@ export function ProviderCard({ provider, onViewDetails }: ProviderCardProps) {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            toggleFavorite(provider.id);
+            toggleFavorite(provider._id);
           }}
           className={cn(
             "absolute top-3 right-3 z-10 h-9 w-9 rounded-full flex items-center justify-center transition-all duration-200",

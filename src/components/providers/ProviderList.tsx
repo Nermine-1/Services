@@ -1,11 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlidersHorizontal, TrendingUp, Star, MapPin } from "lucide-react";
 import { ProviderCard } from "./ProviderCard";
 import { ProviderModal } from "./ProviderModal";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { PROVIDERS, Provider, SERVICE_CATEGORIES } from "@/lib/constants";
+import { Provider, SERVICE_CATEGORIES } from "@/lib/constants";
+import { providerApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 interface ProviderListProps {
@@ -20,27 +22,19 @@ export function ProviderList({ searchQuery, selectedCategory }: ProviderListProp
   const [sortBy, setSortBy] = useState<SortOption>("rating");
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
 
+  // Fetch providers from API
+  const { data: providers = [], isLoading, isError } = useQuery({
+    queryKey: ["providers", selectedCategory, searchQuery],
+    queryFn: () =>
+      providerApi.getProviders({
+        category: selectedCategory,
+        search: searchQuery
+      }).then(res => res.data),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   const filteredProviders = useMemo(() => {
-    // Combine static providers with verified providers from localStorage
-    const verifiedProviders = JSON.parse(localStorage.getItem("verifiedProviders") || "[]");
-    let result = [...PROVIDERS, ...verifiedProviders];
-
-    // Filter by category
-    if (selectedCategory) {
-      result = result.filter((p) => p.category === selectedCategory);
-    }
-
-    // Filter by search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query) ||
-          p.services.toLowerCase().includes(query) ||
-          p.location.toLowerCase().includes(query) ||
-          SERVICE_CATEGORIES.find((c) => c.id === p.category)?.name.toLowerCase().includes(query)
-      );
-    }
+    const result = [...providers];
 
     // Sort
     switch (sortBy) {
@@ -59,7 +53,7 @@ export function ProviderList({ searchQuery, selectedCategory }: ProviderListProp
     result.sort((a, b) => (a.isPremium === b.isPremium ? 0 : a.isPremium ? -1 : 1));
 
     return result;
-  }, [searchQuery, selectedCategory, sortBy]);
+  }, [providers, sortBy]);
 
   const sortOptions: { id: SortOption; label: string; icon: typeof Star }[] = [
     { id: "rating", label: t("Note", "التقييم"), icon: Star },
@@ -112,14 +106,36 @@ export function ProviderList({ searchQuery, selectedCategory }: ProviderListProp
 
         {/* Provider grid */}
         <AnimatePresence mode="popLayout">
-          {filteredProviders.length > 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-48 bg-muted rounded-xl animate-pulse" />
+              ))}
+            </div>
+          ) : isError ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center justify-center py-16 text-center"
+            >
+              <div className="h-20 w-20 bg-destructive/10 rounded-2xl flex items-center justify-center mb-4">
+                <MapPin className="h-10 w-10 text-destructive" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                {t("Erreur de chargement", "خطأ في التحميل")}
+              </h3>
+              <p className="text-muted-foreground max-w-sm">
+                {t("Impossible de charger les prestataires. Veuillez réessayer.", "تعذر تحميل المزودين. يرجى المحاولة مرة أخرى.")}
+              </p>
+            </motion.div>
+          ) : filteredProviders.length > 0 ? (
             <motion.div
               layout
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
             >
               {filteredProviders.map((provider, index) => (
                 <motion.div
-                  key={provider.id}
+                  key={provider._id}
                   layout
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}

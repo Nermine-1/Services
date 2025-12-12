@@ -1,10 +1,12 @@
 import { useState, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Star, MapPin, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { PROVIDERS, Provider } from "@/lib/constants";
+import { Provider } from "@/lib/constants";
+import { providerApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 interface FeaturedProvidersProps {
@@ -17,7 +19,12 @@ export function FeaturedProviders({ onViewDetails }: FeaturedProvidersProps) {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const premiumProviders = PROVIDERS.filter((p) => p.isPremium);
+  // Fetch featured providers from API
+  const { data: premiumProviders = [] } = useQuery({
+    queryKey: ["featured-providers"],
+    queryFn: () => providerApi.getFeaturedProviders().then(res => res.data),
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
@@ -83,7 +90,7 @@ export function FeaturedProviders({ onViewDetails }: FeaturedProvidersProps) {
         >
           {premiumProviders.map((provider, index) => (
             <motion.div
-              key={provider.id}
+              key={provider._id}
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}

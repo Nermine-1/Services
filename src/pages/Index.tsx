@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -11,6 +12,7 @@ import { ProviderModal } from "@/components/providers/ProviderModal";
 import { Provider, PROVIDERS } from "@/lib/constants";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { providerApi } from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, User, Settings } from "lucide-react";
 import { ProviderCard } from "@/components/providers/ProviderCard";
@@ -25,7 +27,19 @@ const Index = () => {
   const { t } = useLanguage();
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  const favoriteProviders = PROVIDERS.filter((p) => favorites.includes(p.id));
+  // Fetch favorite providers from API
+  const { data: favoriteProviders = [] } = useQuery({
+    queryKey: ["favorites-providers", favorites],
+    queryFn: () => {
+      if (favorites.length > 0) {
+        return Promise.all(
+          favorites.map(id => providerApi.getProviderById(id))
+        ).then(responses => responses.map(res => res.data));
+      }
+      return [];
+    },
+    enabled: favorites.length > 0,
+  });
 
   useEffect(() => {
     if (searchQuery && resultsRef.current) {
@@ -99,7 +113,7 @@ const Index = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {favoriteProviders.map((provider) => (
                   <ProviderCard
-                    key={provider.id}
+                    key={provider._id}
                     provider={provider}
                     onViewDetails={setSelectedProvider}
                   />

@@ -15,6 +15,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { SERVICE_CATEGORIES } from "@/lib/constants";
 import { Upload, X, CheckCircle, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { authApi } from "@/lib/api";
 
 const providerSchema = z.object({
   name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
@@ -92,11 +93,6 @@ const ProviderRegistration = () => {
 
 
   const onSubmit = async (data: ProviderFormData) => {
-    if (documents.length === 0) {
-      toast.error("Veuillez télécharger au moins un document justificatif");
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -110,34 +106,16 @@ const ProviderRegistration = () => {
         });
       }
 
-      // Simulate API call
-      const providerData = {
+      // Call API to register provider
+      const response = await authApi.registerProvider({
         ...data,
-        id: Date.now().toString(),
-        whatsapp: data.phone, // Use phone as whatsapp for now
-        documents: documents.map(doc => ({
-          name: doc.name,
-          size: doc.size,
-          type: doc.type,
-        })),
-        status: "pending", // pending, verified, rejected
-        createdAt: new Date().toISOString(),
+        whatsapp: data.phone,
         isPremium: isPremium,
+        isAvailable: true,
         rating: 0,
         reviewCount: 0,
-        isAvailable: true,
-        priceRange: data.priceRange,
-        availability: data.availability,
         photo: photoUrl,
-      };
-
-      // Save to localStorage for now
-      const providerDataWithPassword = {
-        ...providerData,
-        password: data.password, // Save password for login
-      };
-      const existingProviders = JSON.parse(localStorage.getItem("pendingProviders") || "[]");
-      localStorage.setItem("pendingProviders", JSON.stringify([...existingProviders, providerDataWithPassword]));
+      });
 
       toast.success("Votre demande d'inscription a été soumise avec succès !");
       navigate("/");
@@ -390,10 +368,10 @@ const ProviderRegistration = () => {
               </CardContent>
             </Card>
 
-            {/* Documents */}
+            {/* Documents (Optional) */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("Documents Justificatifs", "الوثائق المبررة")}</CardTitle>
+                <CardTitle>{t("Documents Justificatifs (Optionnel)", "الوثائق المبررة (اختياري)")}</CardTitle>
                 <CardDescription>
                   {t("Téléchargez vos documents (CIN, diplôme, certificat...)", "قم بتحميل وثائقك (بطاقة الهوية، الشهادة...)")}
                 </CardDescription>

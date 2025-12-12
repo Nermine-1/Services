@@ -44,24 +44,35 @@ const ProviderLogin = () => {
         return;
       }
 
-      // Check verified providers
-      const verifiedProviders = JSON.parse(localStorage.getItem("verifiedProviders") || "[]");
+      // Use backend API for provider login
+      const { authApi } = await import("@/lib/api");
+      const response = await authApi.loginProvider(data);
 
-      const provider = verifiedProviders.find((p: any) =>
-        p.email === data.email && p.password === data.password
-      );
-
-      if (provider) {
+      if (response.data) {
+        const providerData = response.data;
         localStorage.setItem("userRole", "provider");
-        localStorage.setItem("userEmail", data.email);
-        localStorage.setItem("providerData", JSON.stringify(provider));
+        localStorage.setItem("userEmail", providerData.email);
+        localStorage.setItem("providerData", JSON.stringify(providerData));
+        localStorage.setItem("token", providerData.token);
         toast.success("Connexion réussie !");
         navigate("/provider-dashboard");
-      } else {
-        toast.error("Email ou mot de passe incorrect");
       }
-    } catch (error) {
-      toast.error("Erreur lors de la connexion");
+    } catch (error: any) {
+      if (error.response?.status === 403) {
+        // Handle pending or rejected status
+        const errorData = error.response.data;
+        if (errorData.status === "pending") {
+          toast.error("Votre compte est en attente d'approbation par l'administrateur");
+        } else if (errorData.status === "rejected") {
+          toast.error("Votre compte a été rejeté. Veuillez contacter l'administrateur");
+        } else {
+          toast.error(errorData.message || "Accès refusé");
+        }
+      } else if (error.response?.status === 401) {
+        toast.error("Email ou mot de passe incorrect");
+      } else {
+        toast.error("Erreur lors de la connexion");
+      }
     } finally {
       setIsLoading(false);
     }

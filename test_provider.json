@@ -1,0 +1,13 @@
+{
+  "name": "Test Provider",
+  "email": "test@example.com",
+  "password": "password123",
+  "phone": "+216 12 345 678",
+  "whatsapp": "+21612345678",
+  "category": "it",
+  "location": "Tunis",
+  "description": "This is a test provider with a longer description that meets the minimum requirement of 10 characters",
+  "services": "This is a test service description that meets the minimum requirement of 10 characters",
+  "availability": "9-5",
+  "priceRange": "50-100 DT"
+}

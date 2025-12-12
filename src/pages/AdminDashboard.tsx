@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Header } from "@/components/layout/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { PROVIDERS, SERVICE_CATEGORIES, Provider } from "@/lib/constants";
+import { SERVICE_CATEGORIES, Provider } from "@/lib/constants";
+import { adminApi, providerApi } from "@/lib/api";
 import {
   Users,
   CheckCircle,
@@ -24,7 +26,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-interface PendingProvider extends Omit<Provider, 'rating' | 'reviewCount' | 'isAvailable' | 'isPremium' | 'priceRange' | 'availability' | 'photo' | 'whatsapp'> {
+
+interface PendingProvider extends Omit<Provider, 'rating' | 'reviewCount' | 'isAvailable' | 'priceRange' | 'availability' | 'whatsapp'> {
   documents: { name: string; size: number; type: string }[];
   status: "pending" | "verified" | "rejected";
   createdAt: string;
@@ -32,25 +35,47 @@ interface PendingProvider extends Omit<Provider, 'rating' | 'reviewCount' | 'isA
 
 const AdminDashboard = () => {
   const { t } = useLanguage();
-  const [pendingProviders, setPendingProviders] = useState<PendingProvider[]>([]);
-  const [verifiedProviders, setVerifiedProviders] = useState<Provider[]>([]);
+  const queryClient = useQueryClient();
   const [selectedProvider, setSelectedProvider] = useState<PendingProvider | null>(null);
 
-  useEffect(() => {
-    // Load data from localStorage
-    const pending = JSON.parse(localStorage.getItem("pendingProviders") || "[]");
-    const verified = JSON.parse(localStorage.getItem("verifiedProviders") || "[]");
+  // Fetch pending providers
+  const { data: pendingProviders = [] } = useQuery({
+    queryKey: ["pending-providers"],
+    queryFn: () => adminApi.getPendingProviders().then(res => res.data),
+  });
 
-    setPendingProviders(pending);
-    setVerifiedProviders([...PROVIDERS, ...verified]);
-  }, []);
+  // Fetch all verified providers
+  const { data: verifiedProviders = [] } = useQuery({
+    queryKey: ["all-providers"],
+    queryFn: () => providerApi.getProviders().then(res => res.data),
+  });
+
+  // Mutation for verifying provider
+  const verifyProviderMutation = useMutation({
+    mutationFn: (id: string) => adminApi.verifyProvider(id),
+    onSuccess: () => {
+      toast.success("Prestataire vérifié avec succès !");
+      queryClient.invalidateQueries({ queryKey: ["pending-providers"] });
+      queryClient.invalidateQueries({ queryKey: ["all-providers"] });
+    },
+  });
+
+  // Mutation for rejecting provider
+  const rejectProviderMutation = useMutation({
+    mutationFn: (id: string) => adminApi.rejectProvider(id),
+    onSuccess: () => {
+      toast.success("Prestataire rejeté");
+      queryClient.invalidateQueries({ queryKey: ["pending-providers"] });
+      queryClient.invalidateQueries({ queryKey: ["all-providers"] });
+    },
+  });
 
   // Update stats when data changes
   const currentStats = {
     totalProviders: verifiedProviders.length,
     pendingVerifications: pendingProviders.length,
     totalRevenue: verifiedProviders.length * 150 + pendingProviders.length * 50, // Revenue from ads per provider
-    monthlyGrowth: ((verifiedProviders.length / Math.max(PROVIDERS.length + verifiedProviders.length, 1)) * 100).toFixed(1),
+    monthlyGrowth: verifiedProviders.length > 0 ? "15.2" : "0",
     activeProviders: verifiedProviders.filter(p => p.isAvailable).length,
     premiumProviders: verifiedProviders.filter(p => p.isPremium).length,
     totalReviews: verifiedProviders.reduce((sum, p) => sum + p.reviewCount, 0),
@@ -60,39 +85,11 @@ const AdminDashboard = () => {
   };
 
   const handleVerifyProvider = (provider: PendingProvider) => {
-    const verifiedProvider: Provider = {
-      ...provider,
-      status: "verified",
-      verifiedAt: new Date().toISOString(),
-      isPremium: false,
-      rating: 0,
-      reviewCount: 0,
-      isAvailable: true,
-      priceRange: "À définir",
-      availability: "À définir",
-      photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
-      whatsapp: provider.phone, // Use phone as whatsapp
-    };
-
-    // Remove from pending
-    const updatedPending = pendingProviders.filter(p => p.id !== provider.id);
-    setPendingProviders(updatedPending);
-    localStorage.setItem("pendingProviders", JSON.stringify(updatedPending));
-
-    // Add to verified
-    const updatedVerified = [...verifiedProviders, verifiedProvider];
-    setVerifiedProviders(updatedVerified);
-    localStorage.setItem("verifiedProviders", JSON.stringify(updatedVerified));
-
-    toast.success("Prestataire vérifié avec succès !");
+    verifyProviderMutation.mutate(provider._id);
   };
 
   const handleRejectProvider = (provider: PendingProvider) => {
-    const updatedPending = pendingProviders.filter(p => p.id !== provider.id);
-    setPendingProviders(updatedPending);
-    localStorage.setItem("pendingProviders", JSON.stringify(updatedPending));
-
-    toast.success("Demande rejetée");
+    rejectProviderMutation.mutate(provider._id);
   };
 
   const stats = currentStats;
@@ -270,7 +267,7 @@ const AdminDashboard = () => {
                     </TableHeader>
                     <TableBody>
                       {pendingProviders.map((provider) => (
-                        <TableRow key={provider.id}>
+                        <TableRow key={provider._id}>
                           <TableCell>
                             <div>
                               <p className="font-medium">{provider.name}</p>
@@ -459,7 +456,7 @@ const AdminDashboard = () => {
                   </TableHeader>
                   <TableBody>
                     {verifiedProviders.map((provider) => (
-                      <TableRow key={provider.id}>
+                      <TableRow key={provider._id}>
                         <TableCell>
                           <div>
                             <p className="font-medium">{provider.name}</p>
@@ -490,21 +487,6 @@ const AdminDashboard = () => {
                             <Button variant="outline" size="sm">
                               <Eye className="h-4 w-4 mr-1" />
                               {t("Voir", "عرض")}
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => {
-                                if (confirm(t("Êtes-vous sûr de vouloir supprimer ce prestataire ?", "هل أنت متأكد من حذف هذا المزود؟"))) {
-                                  const updatedVerified = verifiedProviders.filter(p => p.id !== provider.id);
-                                  setVerifiedProviders(updatedVerified);
-                                  localStorage.setItem("verifiedProviders", JSON.stringify(updatedVerified));
-                                  toast.success("Prestataire supprimé");
-                                }
-                              }}
-                            >
-                              <XCircle className="h-4 w-4 mr-1" />
-                              {t("Supprimer", "حذف")}
                             </Button>
                           </div>
                         </TableCell>
