@@ -119,8 +119,19 @@ const ProviderRegistration = () => {
 
       toast.success("Votre demande d'inscription a été soumise avec succès !");
       navigate("/");
-    } catch (error) {
-      toast.error("Une erreur s'est produite lors de l'inscription");
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.errors?.join(", ") ||
+                          error.message || 
+                          "Une erreur s'est produite lors de l'inscription";
+      toast.error(errorMessage);
+      
+      // Log missing fields if any
+      if (error.response?.data?.missingFields) {
+        console.error("Missing fields:", error.response.data.missingFields);
+        toast.error(`Champs manquants: ${error.response.data.missingFields.join(", ")}`);
+      }
     } finally {
       setIsSubmitting(false);
     }

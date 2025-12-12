@@ -1,20 +1,24 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-type Language = "fr" | "ar";
+type Language = "en" | "fr" | "ar";
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (fr: string, ar: string) => string;
+  t: (en: string, fr: string, ar: string) => string;
   isRTL: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>("fr");
+  const [language, setLanguage] = useState<Language>("en");
 
-  const t = (fr: string, ar: string) => (language === "fr" ? fr : ar);
+  const t = (en: string, fr: string, ar: string) => {
+    if (language === "en") return en;
+    if (language === "fr") return fr;
+    return ar;
+  };
   const isRTL = language === "ar";
 
   return (

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Header } from "@/components/layout/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,26 +23,63 @@ import {
   BarChart3,
   Shield,
   Star,
-  Crown
+  Crown,
+  AlertCircle
 } from "lucide-react";
 import { toast } from "sonner";
 
 
 interface PendingProvider extends Omit<Provider, 'rating' | 'reviewCount' | 'isAvailable' | 'priceRange' | 'availability' | 'whatsapp'> {
-  documents: { name: string; size: number; type: string }[];
+  documents?: { name: string; size: number; type: string }[];
   status: "pending" | "verified" | "rejected";
   createdAt: string;
 }
 
 const AdminDashboard = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedProvider, setSelectedProvider] = useState<PendingProvider | null>(null);
 
+  // Check admin authentication on mount
+  useEffect(() => {
+    const userRole = localStorage.getItem("userRole");
+    const token = localStorage.getItem("token");
+    
+    console.log("AdminDashboard auth check - Role:", userRole, "Token:", token ? "exists" : "missing");
+    
+    if (userRole !== "admin" || !token) {
+      console.warn("Admin not authenticated. Redirecting to login...");
+      toast.error("Veuillez vous connecter en tant qu'administrateur");
+      navigate("/provider-login");
+      return;
+    }
+    
+    console.log("Admin authenticated successfully");
+  }, [navigate]);
+
   // Fetch pending providers
-  const { data: pendingProviders = [] } = useQuery({
+  const { data: pendingProviders = [], refetch: refetchPending, error: pendingError, isLoading: pendingLoading } = useQuery({
     queryKey: ["pending-providers"],
-    queryFn: () => adminApi.getPendingProviders().then(res => res.data),
+    queryFn: async () => {
+      try {
+        const response = await adminApi.getPendingProviders();
+        console.log("Pending providers response:", response.data);
+        return response.data;
+      } catch (error: any) {
+        console.error("Error fetching pending providers:", error);
+        console.error("Error response:", error.response?.data);
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          toast.error("Veuillez vous connecter en tant qu'administrateur");
+        } else {
+          toast.error("Erreur lors du chargement des demandes");
+        }
+        throw error;
+      }
+    },
+    refetchInterval: 5000, // Refetch every 5 seconds
+    refetchOnWindowFocus: true,
+    retry: false, // Don't retry on auth errors
   });
 
   // Fetch all verified providers
@@ -57,6 +95,7 @@ const AdminDashboard = () => {
       toast.success("Prestataire vérifié avec succès !");
       queryClient.invalidateQueries({ queryKey: ["pending-providers"] });
       queryClient.invalidateQueries({ queryKey: ["all-providers"] });
+      refetchPending(); // Manually refetch pending providers
     },
   });
 
@@ -67,6 +106,7 @@ const AdminDashboard = () => {
       toast.success("Prestataire rejeté");
       queryClient.invalidateQueries({ queryKey: ["pending-providers"] });
       queryClient.invalidateQueries({ queryKey: ["all-providers"] });
+      refetchPending(); // Manually refetch pending providers
     },
   });
 
@@ -246,7 +286,27 @@ const AdminDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {pendingProviders.length === 0 ? (
+                {pendingLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">
+                      {t("Chargement...", "جاري التحميل...")}
+                    </p>
+                  </div>
+                ) : pendingError ? (
+                  <div className="text-center py-8">
+                    <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+                    <p className="text-destructive">
+                      {t("Erreur lors du chargement", "خطأ في التحميل")}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {pendingError instanceof Error ? pendingError.message : "Erreur inconnue"}
+                    </p>
+                    <Button onClick={() => refetchPending()} variant="outline" className="mt-4">
+                      {t("Réessayer", "إعادة المحاولة")}
+                    </Button>
+                  </div>
+                ) : pendingProviders.length === 0 ? (
                   <div className="text-center py-8">
                     <CheckCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <p className="text-muted-foreground">
@@ -282,7 +342,7 @@ const AdminDashboard = () => {
                           <TableCell>{provider.location}</TableCell>
                           <TableCell>
                             <Badge variant="outline">
-                              {provider.documents.length} {t("fichiers", "ملفات")}
+                              {provider.documents?.length || 0} {t("fichiers", "ملفات")}
                             </Badge>
                           </TableCell>
                           <TableCell>
@@ -356,30 +416,36 @@ const AdminDashboard = () => {
                                       <div>
                                         <h3 className="font-semibold mb-2">{t("Documents Justificatifs", "الوثائق المبررة")}</h3>
                                         <div className="space-y-2">
-                                          {selectedProvider.documents.map((doc, index) => (
-                                            <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                                              <div className="flex items-center gap-3">
-                                                <FileText className="h-5 w-5 text-muted-foreground" />
-                                                <div>
-                                                  <p className="text-sm font-medium">{doc.name}</p>
-                                                  <p className="text-xs text-muted-foreground">
-                                                    {doc.type} • {(doc.size / 1024 / 1024).toFixed(2)} MB
-                                                  </p>
+                                          {selectedProvider.documents && selectedProvider.documents.length > 0 ? (
+                                            selectedProvider.documents.map((doc, index) => (
+                                              <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                                                <div className="flex items-center gap-3">
+                                                  <FileText className="h-5 w-5 text-muted-foreground" />
+                                                  <div>
+                                                    <p className="text-sm font-medium">{doc.name}</p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                      {doc.type} • {(doc.size / 1024 / 1024).toFixed(2)} MB
+                                                    </p>
+                                                  </div>
                                                 </div>
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() => {
+                                                    // In a real app, this would open/download the file
+                                                    toast.info(`Visualisation de ${doc.name} - Fonctionnalité à implémenter`);
+                                                  }}
+                                                >
+                                                  <Eye className="h-4 w-4 mr-1" />
+                                                  {t("Voir", "عرض")}
+                                                </Button>
                                               </div>
-                                              <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => {
-                                                  // In a real app, this would open/download the file
-                                                  toast.info(`Visualisation de ${doc.name} - Fonctionnalité à implémenter`);
-                                                }}
-                                              >
-                                                <Eye className="h-4 w-4 mr-1" />
-                                                {t("Voir", "عرض")}
-                                              </Button>
-                                            </div>
-                                          ))}
+                                            ))
+                                          ) : (
+                                            <p className="text-sm text-muted-foreground py-4 text-center">
+                                              {t("Aucun document fourni", "لم يتم تقديم أي وثائق")}
+                                            </p>
+                                          )}
                                         </div>
                                       </div>
 

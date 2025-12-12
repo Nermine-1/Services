@@ -18,7 +18,7 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
 
   if (!provider) return null;
 
-  const favorite = isFavorite(provider.id);
+  const favorite = isFavorite(provider._id);
   const category = SERVICE_CATEGORIES.find((c) => c.id === provider.category);
 
   const handleWhatsApp = () => {
@@ -64,7 +64,7 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
               {/* Header image */}
               <div className="relative h-48 md:h-56 bg-gradient-to-br from-primary/20 to-accent/20">
                 <img
-                  src={provider.photo}
+                  src={provider.photo || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face"}
                   alt={provider.name}
                   className="w-full h-full object-cover"
                 />
@@ -81,7 +81,7 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
                 {/* Actions */}
                 <div className="absolute top-4 left-4 flex gap-2">
                   <button
-                    onClick={() => toggleFavorite(provider.id)}
+                    onClick={() => toggleFavorite(provider._id)}
                     className={cn(
                       "h-10 w-10 rounded-full flex items-center justify-center transition-all",
                       favorite

@@ -15,14 +15,16 @@ const router = express.Router();
 // Public routes
 router.get("/", getProviders);
 router.get("/featured", getFeaturedProviders);
-router.get("/:id", getProviderById);
+
+// Admin routes (must come before /:id to avoid route conflicts)
+router.get("/pending", adminAuth, getPendingProviders);
+router.put("/:id/verify", adminAuth, verifyProvider);
+router.put("/:id/reject", adminAuth, rejectProvider);
 
 // Provider routes (authenticated)
 router.put("/:id", auth, updateProvider);
 
-// Admin routes
-router.put("/:id/verify", adminAuth, verifyProvider);
-router.put("/:id/reject", adminAuth, rejectProvider);
-router.get("/pending", adminAuth, getPendingProviders);
+// Public route (must come last to avoid conflicts)
+router.get("/:id", getProviderById);
 
 export default router;

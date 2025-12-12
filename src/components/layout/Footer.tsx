@@ -15,6 +15,7 @@ export function Footer() {
                         </h3>
                         <p className="text-muted-foreground text-sm max-w-xs">
                             {t(
+                                "Your trusted platform to find the best service providers in Tunisia.",
                                 "Votre plateforme de confiance pour trouver les meilleurs prestataires de services en Tunisie.",
                                 "منصتك الموثوقة للعثور على أفضل مزودي الخدمات في تونس."
                             )}
@@ -24,27 +25,27 @@ export function Footer() {
                     {/* Quick Links */}
                     <div>
                         <h4 className="font-semibold mb-4 text-foreground">
-                            {t("Liens rapides", "روابط سريعة")}
+                            {t("Quick Links", "Liens rapides", "روابط سريعة")}
                         </h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li>
                                 <a href="/" className="hover:text-primary transition-colors">
-                                    {t("Accueil", "الرئيسية")}
+                                    {t("Home", "Accueil", "الرئيسية")}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-primary transition-colors">
-                                    {t("À propos", "من نحن")}
+                                    {t("About", "À propos", "من نحن")}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-primary transition-colors">
-                                    {t("Devenir prestataire", "كن مزود خدمة")}
+                                    {t("Become a provider", "Devenir prestataire", "كن مزود خدمة")}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-primary transition-colors">
-                                    {t("Contact", "اتصل بنا")}
+                                    {t("Contact", "Contact", "اتصل بنا")}
                                 </a>
                             </li>
                         </ul>
@@ -53,7 +54,7 @@ export function Footer() {
                     {/* Contact */}
                     <div>
                         <h4 className="font-semibold mb-4 text-foreground">
-                            {t("Contactez-nous", "اتصل بنا")}
+                            {t("Contact Us", "Contactez-nous", "اتصل بنا")}
                         </h4>
                         <ul className="space-y-3 text-sm text-muted-foreground">
                             <li className="flex items-center gap-2">
@@ -74,7 +75,7 @@ export function Footer() {
                     {/* Social */}
                     <div>
                         <h4 className="font-semibold mb-4 text-foreground">
-                            {t("Suivez-nous", "تابعنا")}
+                            {t("Follow Us", "Suivez-nous", "تابعنا")}
                         </h4>
                         <div className="flex gap-4">
                             <a
@@ -95,7 +96,7 @@ export function Footer() {
 
                 <div className="border-t border-border/50 pt-8 text-center text-sm text-muted-foreground">
                     <p>
-                        &copy; {new Date().getFullYear()} Serveeny. {t("Tous droits réservés.", "جميع الحقوق محفوظة.")}
+                        &copy; {new Date().getFullYear()} Serveeny. {t("All rights reserved.", "Tous droits réservés.", "جميع الحقوق محفوظة.")}
                     </p>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "http://localhost:5001/api";
 
 // Create axios instance
 const api = axios.create({
@@ -15,6 +15,9 @@ api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log("API request with token:", config.url);
+  } else {
+    console.warn("API request without token:", config.url);
   }
   return config;
 }, (error) => {
@@ -27,6 +30,7 @@ const authApi = {
   loginUser: (data: any) => api.post("/auth/login", data),
   registerProvider: (data: any) => api.post("/auth/provider-register", data),
   loginProvider: (data: any) => api.post("/auth/provider-login", data),
+  loginAdmin: (data: any) => api.post("/auth/admin-login", data),
 };
 
 // Provider API

@@ -6,6 +6,14 @@ import { useLanguage } from "@/contexts/LanguageContext";
 export function HeroSection() {
   const { t } = useLanguage();
 
+  const handleExploreServices = () => {
+    // Scroll to services section
+    const servicesSection = document.getElementById("services-section");
+    if (servicesSection) {
+      servicesSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <section className="relative overflow-hidden py-12 md:py-20">
       {/* Background decoration */}
@@ -31,33 +39,34 @@ export function HeroSection() {
             >
               <Sparkles className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium text-primary">
-                {t("Plus de 500 prestataires", "أكثر من 500 مزود خدمة")}
+                {t("Over 500 providers", "Plus de 500 prestataires", "أكثر من 500 مزود خدمة")}
               </span>
             </motion.div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
               <span className="text-foreground">
-                {t("Trouvez le ", "اعثر على ")}
+                {t("Find the ", "Trouvez le ", "اعثر على ")}
               </span>
               <span className="text-gradient">
-                {t("meilleur service", "أفضل خدمة")}
+                {t("best service", "meilleur service", "أفضل خدمة")}
               </span>
               <br />
               <span className="text-foreground">
-                {t("près de chez vous", "بالقرب منك")}
+                {t("near you", "près de chez vous", "بالقرب منك")}
               </span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-lg mx-auto md:mx-0">
               {t(
+                "Electricians, plumbers, cleaners, gardeners... Contact them directly by phone or WhatsApp.",
                 "Électriciens, plombiers, femmes de ménage, jardiniers... Contactez-les directement par téléphone ou WhatsApp.",
                 "كهربائيون، سباكون، عاملات تنظيف، بستانيون... تواصل معهم مباشرة عبر الهاتف أو واتساب."
               )}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Button variant="hero" size="xl" className="group">
-                {t("Explorer les services", "استكشف الخدمات")}
+              <Button variant="hero" size="xl" className="group" onClick={handleExploreServices}>
+                {t("Explore services", "Explorer les services", "استكشف الخدمات")}
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
               
@@ -71,9 +80,9 @@ export function HeroSection() {
               className="flex items-center justify-center md:justify-start gap-8 mt-10"
             >
               {[
-                { value: "500+", label: t("Prestataires", "مزود") },
-                { value: "12", label: t("Catégories", "فئة") },
-                { value: "10K+", label: t("Clients", "عميل") },
+                { value: "500+", label: t("Providers", "Prestataires", "مزود") },
+                { value: "12", label: t("Categories", "Catégories", "فئة") },
+                { value: "10K+", label: t("Clients", "Clients", "عميل") },
               ].map((stat, index) => (
                 <div key={index} className="text-center">
                   <div className="text-2xl md:text-3xl font-bold text-foreground">{stat.value}</div>
@@ -117,8 +126,8 @@ export function HeroSection() {
                       <span className="text-success text-sm">✓</span>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold">{t("Vérifié", "موثق")}</p>
-                      <p className="text-[10px] text-muted-foreground">{t("Profil complet", "ملف كامل")}</p>
+                      <p className="text-xs font-semibold">{t("Verified", "Vérifié", "موثق")}</p>
+                      <p className="text-[10px] text-muted-foreground">{t("Complete profile", "Profil complet", "ملف كامل")}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -137,7 +146,7 @@ export function HeroSection() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold">4.9 ★</p>
-                      <p className="text-[10px] text-muted-foreground">124 {t("avis", "تقييم")}</p>
+                      <p className="text-[10px] text-muted-foreground">124 {t("reviews", "avis", "تقييم")}</p>
                     </div>
                   </div>
                 </motion.div>

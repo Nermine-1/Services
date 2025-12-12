@@ -68,10 +68,12 @@ const Index = () => {
         return (
           <>
             <HeroSection />
-            <CategoryGrid
-              selectedCategory={selectedCategory}
-              onCategorySelect={handleCategorySelect}
-            />
+            <div id="services-section">
+              <CategoryGrid
+                selectedCategory={selectedCategory}
+                onCategorySelect={handleCategorySelect}
+              />
+            </div>
             <FeaturedProviders onViewDetails={setSelectedProvider} />
             <div ref={resultsRef} className="scroll-mt-24">
               <ProviderList searchQuery={searchQuery} selectedCategory={selectedCategory} />

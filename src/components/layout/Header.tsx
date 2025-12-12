@@ -36,7 +36,7 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
             </div>
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-foreground">Serveeny</h1>
-              <p className="text-xs text-muted-foreground">{t("Votre service, votre besoin", "خدمات منزلية")}</p>
+              <p className="text-xs text-muted-foreground">{t("Your service, your need", "Votre service, votre besoin", "خدمات منزلية")}</p>
             </div>
           </motion.div>
 
@@ -59,7 +59,7 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="text"
-                  placeholder={t("Rechercher un service ou prestataire...", "ابحث عن خدمة أو مزود...")}
+                  placeholder={t("Search for a service or provider...", "Rechercher un service ou prestataire...", "ابحث عن خدمة أو مزود...")}
                   value={searchQuery || ""}
                   onChange={(e) => onSearch(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
@@ -81,8 +81,13 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setLanguage(language === "fr" ? "ar" : "fr")}
+              onClick={() => {
+                if (language === "en") setLanguage("fr");
+                else if (language === "fr") setLanguage("ar");
+                else setLanguage("en");
+              }}
               className="hidden sm:flex"
+              title={language === "en" ? "English" : language === "fr" ? "Français" : "العربية"}
             >
               <Globe className="h-5 w-5" />
               <span className="sr-only">Toggle language</span>
@@ -96,14 +101,14 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
                 onClick={() => window.location.href = '/provider-login'}
                 className="text-sm"
               >
-                {t("Se connecter", "دخول")}
+                {t("Sign in", "Se connecter", "دخول")}
               </Button>
               <Button
                 size="sm"
                 onClick={() => window.location.href = '/provider-registration'}
                 className="text-sm"
               >
-                {t("Devenir prestataire", "كن مزود خدمة")}
+                {t("Become a provider", "Devenir prestataire", "كن مزود خدمة")}
               </Button>
             </div>
 
@@ -145,7 +150,7 @@ export function Header({ onSearch, searchQuery }: HeaderProps) {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <input
                 type="text"
-                placeholder={t("Rechercher...", "ابحث...")}
+                placeholder={t("Search...", "Rechercher...", "ابحث...")}
                 value={searchQuery || ""}
                 onChange={(e) => onSearch(e.target.value)}
                 className="w-full h-11 pl-12 pr-4 rounded-xl bg-muted/50 border-2 border-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-all"

@@ -35,17 +35,23 @@ const ProviderLogin = () => {
     setIsLoading(true);
 
     try {
+      const { authApi } = await import("@/lib/api");
+      
       // Check if admin login
       if (data.email === "admin@serveeny.tn" && data.password === "admin123") {
-        localStorage.setItem("userRole", "admin");
-        localStorage.setItem("userEmail", data.email);
-        toast.success("Connexion admin réussie !");
-        navigate("/admin");
-        return;
+        const adminResponse = await authApi.loginAdmin(data);
+        if (adminResponse.data) {
+          const adminData = adminResponse.data;
+          localStorage.setItem("userRole", "admin");
+          localStorage.setItem("userEmail", adminData.email);
+          localStorage.setItem("token", adminData.token);
+          toast.success("Connexion admin réussie !");
+          navigate("/admin");
+          return;
+        }
       }
 
       // Use backend API for provider login
-      const { authApi } = await import("@/lib/api");
       const response = await authApi.loginProvider(data);
 
       if (response.data) {

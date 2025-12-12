@@ -110,9 +110,12 @@ const verifyProvider = async (req: Request, res: Response) => {
 // Admin: Get all pending providers
 const getPendingProviders = async (req: Request, res: Response) => {
   try {
-    const providers = await Provider.find({ status: "pending" });
+    console.log("Fetching pending providers...");
+    const providers = await Provider.find({ status: "pending" }).sort({ createdAt: -1 });
+    console.log(`Found ${providers.length} pending providers`);
     res.json(providers);
   } catch (error) {
+    console.error("Error fetching pending providers:", error);
     res.status(500).json({ message: (error as Error).message });
   }
 };

@@ -99,7 +99,7 @@ export function FeaturedProviders({ onViewDetails }: FeaturedProvidersProps) {
             >
               <div className="relative h-[360px] rounded-2xl overflow-hidden shadow-card">
                 <img
-                  src={provider.photo}
+                  src={provider.photo || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face"}
                   alt={provider.name}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />

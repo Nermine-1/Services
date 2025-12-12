@@ -72,11 +72,39 @@ const loginUser = async (req: Request, res: Response) => {
 const registerProvider = async (req: Request, res: Response) => {
   try {
     const { name, email, password, phone, whatsapp, category, location,
-      description, services, availability, priceRange } = req.body;
+      description, services, availability, priceRange, photo, isPremium,
+      certifications, serviceArea } = req.body;
+
+    console.log("Provider registration attempt:", { name, email, category });
+    console.log("Request body keys:", Object.keys(req.body));
+
+    // Validate required fields
+    if (!name || !email || !password || !phone || !category || !location || 
+        !description || !services || !availability || !priceRange) {
+      const missingFields = [];
+      if (!name) missingFields.push("name");
+      if (!email) missingFields.push("email");
+      if (!password) missingFields.push("password");
+      if (!phone) missingFields.push("phone");
+      if (!category) missingFields.push("category");
+      if (!location) missingFields.push("location");
+      if (!description) missingFields.push("description");
+      if (!services) missingFields.push("services");
+      if (!availability) missingFields.push("availability");
+      if (!priceRange) missingFields.push("priceRange");
+      
+      console.log("Missing required fields:", missingFields);
+      console.log("Received data:", { name, email, phone, category, location, description, services, availability, priceRange });
+      return res.status(400).json({ 
+        message: "Missing required fields",
+        missingFields 
+      });
+    }
 
     // Check if provider exists
     const providerExists = await Provider.findOne({ email });
     if (providerExists) {
+      console.log("Provider already exists:", email);
       return res.status(400).json({ message: "Provider already exists" });
     }
 
@@ -85,37 +113,54 @@ const registerProvider = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create provider
-    const provider = await Provider.create({
-      name,
-      email,
-      password: hashedPassword,
-      phone,
-      whatsapp,
-      category,
-      location,
-      description,
-      services,
-      availability,
-      priceRange,
-      isAvailable: false,
-      isPremium: false,
-      rating: 0,
-      reviewCount: 0,
-      status: "pending"
-    });
+    try {
+      const provider = await Provider.create({
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        whatsapp: whatsapp || phone,
+        category,
+        location,
+        description,
+        services,
+        availability,
+        priceRange,
+        photo: photo || undefined,
+        isPremium: isPremium || false,
+        certifications: certifications || undefined,
+        serviceArea: serviceArea || undefined,
+        isAvailable: false,
+        rating: 0,
+        reviewCount: 0,
+        status: "pending"
+      });
 
-    if (provider) {
+      console.log("Provider created successfully:", provider._id);
       res.status(201).json({
         _id: provider._id,
         name: provider.name,
         email: provider.email,
         token: generateToken(provider._id.toString(), "provider")
       });
-    } else {
-      res.status(400).json({ message: "Invalid provider data" });
+    } catch (createError: any) {
+      console.error("Error creating provider in database:", createError);
+      // Handle Mongoose validation errors
+      if (createError.name === "ValidationError") {
+        const validationErrors = Object.values(createError.errors).map((err: any) => err.message);
+        return res.status(400).json({ 
+          message: "Validation error",
+          errors: validationErrors 
+        });
+      }
+      throw createError;
     }
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+  } catch (error: any) {
+    console.error("Provider registration error:", error);
+    res.status(500).json({ 
+      message: error.message || "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.stack : undefined
+    });
   }
 };
 
@@ -160,4 +205,26 @@ const loginProvider = async (req: Request, res: Response) => {
   }
 };
 
-export { registerUser, loginUser, registerProvider, loginProvider };
+// Admin Login
+const loginAdmin = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    // Hardcoded admin credentials (in production, use database)
+    if (email === "admin@serveeny.tn" && password === "admin123") {
+      res.json({
+        _id: "admin",
+        email: "admin@serveeny.tn",
+        role: "admin",
+        token: generateToken("admin", "admin")
+      });
+    } else {
+      res.status(401).json({ message: "Invalid admin credentials" });
+    }
+  } catch (error) {
+    console.error("Admin login error:", error);
+    res.status(500).json({ message: (error as Error).message });
+  }
+};
+
+export { registerUser, loginUser, registerProvider, loginProvider, loginAdmin };

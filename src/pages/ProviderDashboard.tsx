@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/layout/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SERVICE_CATEGORIES } from "@/lib/constants";
+import { providerApi } from "@/lib/api";
 import {
   User,
   Settings,
@@ -20,39 +22,84 @@ import {
   LogOut
 } from "lucide-react";
 import { toast } from "sonner";
+import { jwtDecode } from "jwt-decode";
+
+interface TokenPayload {
+  id: string;
+  role: string;
+}
 
 const ProviderDashboard = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [provider, setProvider] = useState<any>(null);
+  const [providerId, setProviderId] = useState<string | null>(null);
 
   useEffect(() => {
     // Check authentication
     const userRole = localStorage.getItem("userRole");
-    const providerData = localStorage.getItem("providerData");
+    const token = localStorage.getItem("token");
 
-    if (userRole !== "provider" || !providerData) {
+    if (userRole !== "provider" || !token) {
       navigate("/provider-login");
       return;
     }
 
-    setProvider(JSON.parse(providerData));
+    // Extract provider ID from token
+    try {
+      const decoded = jwtDecode<TokenPayload>(token);
+      if (decoded.id && decoded.role === "provider") {
+        setProviderId(decoded.id);
+      } else {
+        // Fallback: try to get from localStorage providerData
+        const providerData = localStorage.getItem("providerData");
+        if (providerData) {
+          const data = JSON.parse(providerData);
+          setProviderId(data._id);
+        } else {
+          navigate("/provider-login");
+        }
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      navigate("/provider-login");
+    }
   }, [navigate]);
+
+  // Fetch provider data from API
+  const { data: provider, isLoading, error } = useQuery({
+    queryKey: ["provider", providerId],
+    queryFn: () => providerApi.getProviderById(providerId!).then(res => res.data),
+    enabled: !!providerId,
+  });
 
   const handleLogout = () => {
     localStorage.removeItem("userRole");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("providerData");
+    localStorage.removeItem("token");
     toast.success("Déconnexion réussie");
     navigate("/");
   };
 
-  if (!provider) {
+  if (isLoading || !providerId) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p>{t("Chargement...", "جاري التحميل...")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !provider) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-destructive mb-4">{t("Erreur lors du chargement", "خطأ في التحميل")}</p>
+          <Button onClick={() => navigate("/provider-login")}>
+            {t("Retour à la connexion", "العودة إلى تسجيل الدخول")}
+          </Button>
         </div>
       </div>
     );
@@ -102,14 +149,14 @@ const ProviderDashboard = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  {t("Revenus", "الإيرادات")}
+                  {t("Fourchette de prix", "نطاق الأسعار")}
                 </CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">2,450 DT</div>
+                <div className="text-2xl font-bold">{provider.priceRange || "N/A"}</div>
                 <p className="text-xs text-muted-foreground">
-                  +12% ce mois
+                  {provider.isPremium ? t("Compte Premium", "حساب مميز") : t("Compte Standard", "حساب عادي")}
                 </p>
               </CardContent>
             </Card>
@@ -117,14 +164,22 @@ const ProviderDashboard = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  {t("Demandes", "الطلبات")}
+                  {t("Statut", "الحالة")}
                 </CardTitle>
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">23</div>
-                <p className="text-xs text-muted-foreground">
-                  5 en attente
+                <div className="text-2xl font-bold">
+                  <Badge variant={provider.status === "verified" ? "default" : "secondary"}>
+                    {provider.status === "verified" ? t("Vérifié", "معتمد") : 
+                     provider.status === "pending" ? t("En attente", "في الانتظار") : 
+                     t("Rejeté", "مرفوض")}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {provider.status === "verified" ? t("Actif sur la plateforme", "نشط على المنصة") : 
+                   provider.status === "pending" ? t("En attente d'approbation", "في انتظار الموافقة") : 
+                   t("Compte rejeté", "حساب مرفوض")}
                 </p>
               </CardContent>
             </Card>
@@ -173,7 +228,7 @@ const ProviderDashboard = () => {
                     <CardContent className="pt-6">
                       <div className="text-center">
                         <img
-                          src={provider.photo}
+                          src={provider.photo || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face"}
                           alt={provider.name}
                           className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
                         />
@@ -220,10 +275,12 @@ const ProviderDashboard = () => {
                         </div>
                       </div>
 
-                      <div>
-                        <h4 className="font-medium mb-2">{t("Zone de Service", "منطقة الخدمة")}</h4>
-                        <p className="text-sm text-muted-foreground">{provider.serviceArea}</p>
-                      </div>
+                      {provider.serviceArea && (
+                        <div>
+                          <h4 className="font-medium mb-2">{t("Zone de Service", "منطقة الخدمة")}</h4>
+                          <p className="text-sm text-muted-foreground">{provider.serviceArea}</p>
+                        </div>
+                      )}
 
                       <div>
                         <h4 className="font-medium mb-2">{t("Disponibilité", "التوفر")}</h4>
@@ -303,21 +360,27 @@ const ProviderDashboard = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>{t("Activité Mensuelle", "النشاط الشهري")}</CardTitle>
+                    <CardTitle>{t("Informations de Service", "معلومات الخدمة")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">{t("Demandes reçues", "الطلبات المستلمة")}</span>
-                        <span className="font-medium">23</span>
+                        <span className="text-sm">{t("Localisation", "الموقع")}</span>
+                        <span className="font-medium">{provider.location}</span>
+                      </div>
+                      {provider.serviceArea && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">{t("Zone de service", "منطقة الخدمة")}</span>
+                          <span className="font-medium">{provider.serviceArea}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">{t("Fourchette de prix", "نطاق الأسعار")}</span>
+                        <span className="font-medium">{provider.priceRange || t("Non spécifié", "غير محدد")}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">{t("Demandes acceptées", "الطلبات المقبولة")}</span>
-                        <span className="font-medium">18</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm">{t("Taux d'acceptation", "معدل القبول")}</span>
-                        <span className="font-medium">78%</span>
+                        <span className="text-sm">{t("Disponibilité", "التوفر")}</span>
+                        <span className="font-medium text-xs">{provider.availability || t("Non spécifié", "غير محدد")}</span>
                       </div>
                     </div>
                   </CardContent>

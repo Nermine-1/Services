@@ -32,10 +32,10 @@ export function CategoryGrid({ selectedCategory, onCategorySelect }: CategoryGri
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-              {t("Nos services", "خدماتنا")}
+              {t("Our Services", "Nos services", "خدماتنا")}
             </h2>
             <p className="text-muted-foreground mt-1">
-              {t("Choisissez une catégorie", "اختر فئة")}
+              {t("Choose a category", "Choisissez une catégorie", "اختر فئة")}
             </p>
           </div>
           {selectedCategory && (
@@ -43,7 +43,7 @@ export function CategoryGrid({ selectedCategory, onCategorySelect }: CategoryGri
               onClick={() => onCategorySelect(null)}
               className="text-sm text-primary font-medium hover:underline"
             >
-              {t("Voir tout", "عرض الكل")}
+              {t("View all", "Voir tout", "عرض الكل")}
             </button>
           )}
         </div>
@@ -87,7 +87,7 @@ export function CategoryGrid({ selectedCategory, onCategorySelect }: CategoryGri
                     isSelected ? "text-primary" : "text-foreground"
                   )}
                 >
-                  {language === "fr" ? category.name : category.nameAr}
+                  {language === "en" ? category.nameEn || category.name : language === "fr" ? category.name : category.nameAr}
                 </span>
               </motion.button>
             );
