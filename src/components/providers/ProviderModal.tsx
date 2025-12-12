@@ -14,7 +14,7 @@ interface ProviderModalProps {
 
 export function ProviderModal({ provider, onClose }: ProviderModalProps) {
   const { toggleFavorite, isFavorite } = useFavorites();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   if (!provider) return null;
 
@@ -123,10 +123,10 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
                       {provider.isAvailable ? (
                         <>
                           <Check className="h-3 w-3" />
-                          {t("Disponible", "متاح")}
+                          {t("Available", "Disponible", "متاح")}
                         </>
                       ) : (
-                        t("Indisponible", "غير متاح")
+                        t("Unavailable", "Indisponible", "غير متاح")
                       )}
                     </span>
                   </Badge>
@@ -155,15 +155,15 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
                 <div className="flex items-center gap-3 mb-4">
                   {category && (
                     <Badge variant="secondary" className="text-sm">
-                      {category.name}
+                      {language === "en" ? (category.nameEn || category.name) : language === "fr" ? category.name : category.nameAr}
                     </Badge>
                   )}
                   <span className="text-sm font-semibold text-foreground">
-                    {provider.priceRange && provider.priceRange !== "À définir" ? provider.priceRange : t("Prix sur demande", "السعر عند الطلب")}
+                    {provider.priceRange && provider.priceRange !== "À définir" && provider.priceRange !== "To be determined" && provider.priceRange !== "يحدد لاحقاً" ? provider.priceRange : t("Price on request", "Prix sur demande", "السعر عند الطلب")}
                   </span>
                   <span className="flex items-center gap-1 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
-                    {provider.availability && provider.availability !== "À définir" ? provider.availability : t("Horaires à définir", "الأوقات المحددة")}
+                    {provider.availability && provider.availability !== "À définir" && provider.availability !== "To be determined" && provider.availability !== "يحدد لاحقاً" ? provider.availability : t("Hours to be determined", "Horaires à définir", "الأوقات المحددة")}
                   </span>
                 </div>
 
@@ -173,11 +173,11 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
                 {/* Services */}
                 <div className="mb-6">
                   <h3 className="font-semibold text-foreground mb-3">
-                    {t("Services proposés", "الخدمات المقدمة")}
+                    {t("Services Offered", "Services proposés", "الخدمات المقدمة")}
                   </h3>
                   <div className="p-4 bg-muted/50 rounded-lg">
                     <p className="text-sm text-foreground whitespace-pre-line">
-                      {provider.services || t("Aucun service spécifié", "لا توجد خدمات محددة")}
+                      {provider.services || t("No services specified", "Aucun service spécifié", "لا توجد خدمات محددة")}
                     </p>
                   </div>
                 </div>
@@ -186,7 +186,7 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
                 {provider.certifications && provider.certifications.trim() && (
                   <div className="mb-6">
                     <h3 className="font-semibold text-foreground mb-3">
-                      {t("Certifications", "الشهادات")}
+                      {t("Certifications", "Certifications", "الشهادات")}
                     </h3>
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <p className="text-sm text-foreground">{provider.certifications}</p>
@@ -198,7 +198,7 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
                 {provider.serviceArea && (
                   <div className="mb-6">
                     <h3 className="font-semibold text-foreground mb-3">
-                      {t("Zone de service", "منطقة الخدمة")}
+                      {t("Service Area", "Zone de service", "منطقة الخدمة")}
                     </h3>
                     <div className="flex items-center gap-2 p-4 bg-muted/50 rounded-lg">
                       <MapPin className="h-5 w-5 text-muted-foreground" />
@@ -214,7 +214,7 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
                       <Phone className="h-5 w-5 text-secondary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">{t("Téléphone", "الهاتف")}</p>
+                      <p className="text-sm text-muted-foreground">{t("Phone", "Téléphone", "الهاتف")}</p>
                       <p className="font-semibold text-foreground">{provider.phone}</p>
                     </div>
                   </div>
@@ -230,14 +230,14 @@ export function ProviderModal({ provider, onClose }: ProviderModalProps) {
                   </Button>
                   <Button variant="call" size="lg" className="flex-1" onClick={handleCall}>
                     <Phone className="h-5 w-5" />
-                    {t("Appeler", "اتصل")}
+                    {t("Call", "Appeler", "اتصل")}
                   </Button>
                 </div>
 
                 {/* Report button */}
                 <button className="flex items-center justify-center gap-2 w-full mt-4 py-3 text-sm text-muted-foreground hover:text-destructive transition-colors">
                   <Flag className="h-4 w-4" />
-                  {t("Signaler ce profil", "الإبلاغ عن هذا الملف")}
+                  {t("Report this profile", "Signaler ce profil", "الإبلاغ عن هذا الملف")}
                 </button>
               </div>
             </div>

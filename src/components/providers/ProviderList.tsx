@@ -56,15 +56,15 @@ export function ProviderList({ searchQuery, selectedCategory }: ProviderListProp
   }, [providers, sortBy]);
 
   const sortOptions: { id: SortOption; label: string; icon: typeof Star }[] = [
-    { id: "rating", label: t("Note", "التقييم"), icon: Star },
-    { id: "reviews", label: t("Avis", "التعليقات"), icon: TrendingUp },
-    { id: "availability", label: t("Dispo.", "متاح"), icon: MapPin },
+    { id: "rating", label: t("Rating", "Note", "التقييم"), icon: Star },
+    { id: "reviews", label: t("Reviews", "Avis", "التعليقات"), icon: TrendingUp },
+    { id: "availability", label: t("Available", "Dispo.", "متاح"), icon: MapPin },
   ];
 
   const getCategoryName = () => {
-    if (!selectedCategory) return t("Tous les prestataires", "جميع مزودي الخدمات");
+    if (!selectedCategory) return t("All Providers", "Tous les prestataires", "جميع مزودي الخدمات");
     const category = SERVICE_CATEGORIES.find((c) => c.id === selectedCategory);
-    return language === "fr" ? category?.name : category?.nameAr;
+    return language === "en" ? (category?.nameEn || category?.name) : language === "fr" ? category?.name : category?.nameAr;
   };
 
   return (
@@ -77,7 +77,7 @@ export function ProviderList({ searchQuery, selectedCategory }: ProviderListProp
               {getCategoryName()}
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
-              {filteredProviders.length} {t("prestataires trouvés", "مزود خدمة")}
+              {filteredProviders.length} {t("providers found", "prestataires trouvés", "مزود خدمة")}
             </p>
           </div>
 
@@ -122,10 +122,10 @@ export function ProviderList({ searchQuery, selectedCategory }: ProviderListProp
                 <MapPin className="h-10 w-10 text-destructive" />
               </div>
               <h3 className="text-lg font-semibold text-foreground mb-2">
-                {t("Erreur de chargement", "خطأ في التحميل")}
+                {t("Loading Error", "Erreur de chargement", "خطأ في التحميل")}
               </h3>
               <p className="text-muted-foreground max-w-sm">
-                {t("Impossible de charger les prestataires. Veuillez réessayer.", "تعذر تحميل المزودين. يرجى المحاولة مرة أخرى.")}
+                {t("Unable to load providers. Please try again.", "Impossible de charger les prestataires. Veuillez réessayer.", "تعذر تحميل المزودين. يرجى المحاولة مرة أخرى.")}
               </p>
             </motion.div>
           ) : filteredProviders.length > 0 ? (
@@ -159,10 +159,11 @@ export function ProviderList({ searchQuery, selectedCategory }: ProviderListProp
                 <MapPin className="h-10 w-10 text-muted-foreground" />
               </div>
               <h3 className="text-lg font-semibold text-foreground mb-2">
-                {t("Aucun prestataire trouvé", "لم يتم العثور على مزودين")}
+                {t("No providers found", "Aucun prestataire trouvé", "لم يتم العثور على مزودين")}
               </h3>
               <p className="text-muted-foreground max-w-sm">
                 {t(
+                  "Try modifying your search criteria or explore other categories.",
                   "Essayez de modifier vos critères de recherche ou explorez d'autres catégories.",
                   "حاول تعديل معايير البحث أو استكشف فئات أخرى."
                 )}

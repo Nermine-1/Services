@@ -68,7 +68,7 @@ const ProviderRegistration = () => {
     );
 
     if (validFiles.length !== files.length) {
-      toast.error("Seuls les fichiers PDF et images sont acceptés");
+      toast.error(t("Only PDF and image files are accepted", "Seuls les fichiers PDF et images sont acceptés", "يتم قبول ملفات PDF والصور فقط"));
     }
 
     setDocuments(prev => [...prev, ...validFiles].slice(0, 5)); // Max 5 files
@@ -83,7 +83,7 @@ const ProviderRegistration = () => {
     if (file && file.type.startsWith('image/')) {
       setProfilePhoto(file);
     } else {
-      toast.error("Veuillez sélectionner une image valide");
+      toast.error(t("Please select a valid image", "Veuillez sélectionner une image valide", "يرجى تحديد صورة صالحة"));
     }
   };
 
@@ -117,20 +117,20 @@ const ProviderRegistration = () => {
         photo: photoUrl,
       });
 
-      toast.success("Votre demande d'inscription a été soumise avec succès !");
+      toast.success(t("Your registration request has been submitted successfully!", "Votre demande d'inscription a été soumise avec succès !", "تم إرسال طلب التسجيل بنجاح!"));
       navigate("/");
     } catch (error: any) {
       console.error("Registration error:", error);
       const errorMessage = error.response?.data?.message || 
                           error.response?.data?.errors?.join(", ") ||
                           error.message || 
-                          "Une erreur s'est produite lors de l'inscription";
+                          t("An error occurred during registration", "Une erreur s'est produite lors de l'inscription", "حدث خطأ أثناء التسجيل");
       toast.error(errorMessage);
       
       // Log missing fields if any
       if (error.response?.data?.missingFields) {
         console.error("Missing fields:", error.response.data.missingFields);
-        toast.error(`Champs manquants: ${error.response.data.missingFields.join(", ")}`);
+        toast.error(`${t("Missing fields:", "Champs manquants:", "الحقول المفقودة:")} ${error.response.data.missingFields.join(", ")}`);
       }
     } finally {
       setIsSubmitting(false);
@@ -145,10 +145,10 @@ const ProviderRegistration = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">
-              {t("Devenir Prestataire", "كن مزود خدمة")}
+              {t("Become a Provider", "Devenir Prestataire", "كن مزود خدمة")}
             </h1>
             <p className="text-muted-foreground">
-              {t("Rejoignez notre plateforme et développez votre activité", "انضم إلى منصتنا وطور نشاطك")}
+              {t("Join our platform and grow your business", "Rejoignez notre plateforme et développez votre activité", "انضم إلى منصتنا وطور نشاطك")}
             </p>
           </div>
 
@@ -156,16 +156,16 @@ const ProviderRegistration = () => {
             {/* Personal Information */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("Informations Personnelles", "المعلومات الشخصية")}</CardTitle>
+                <CardTitle>{t("Personal Information", "Informations Personnelles", "المعلومات الشخصية")}</CardTitle>
                 <CardDescription>
-                  {t("Renseignez vos informations de base", "أدخل معلوماتك الأساسية")}
+                  {t("Enter your basic information", "Renseignez vos informations de base", "أدخل معلوماتك الأساسية")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      {t("Nom complet", "الاسم الكامل")}
+                      {t("Full Name", "Nom complet", "الاسم الكامل")}
                     </label>
                     <Input {...register("name")} placeholder="Ahmed Ben Salem" />
                     {errors.name && (
@@ -175,7 +175,7 @@ const ProviderRegistration = () => {
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      {t("Email", "البريد الإلكتروني")}
+                      {t("Email", "Email", "البريد الإلكتروني")}
                     </label>
                     <Input {...register("email")} type="email" placeholder="ahmed@example.com" />
                     {errors.email && (
@@ -185,7 +185,7 @@ const ProviderRegistration = () => {
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      {t("Téléphone", "الهاتف")}
+                      {t("Phone", "Téléphone", "الهاتف")}
                     </label>
                     <Input {...register("phone")} placeholder="+216 XX XXX XXX" />
                     {errors.phone && (
@@ -195,7 +195,7 @@ const ProviderRegistration = () => {
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      {t("Mot de passe", "كلمة المرور")}
+                      {t("Password", "Mot de passe", "كلمة المرور")}
                     </label>
                     <Input {...register("password")} type="password" />
                     {errors.password && (
@@ -206,7 +206,7 @@ const ProviderRegistration = () => {
                   {/* Profile Photo */}
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      {t("Photo de profil", "صورة الملف الشخصي")} (optionnel)
+                      {t("Profile Photo", "Photo de profil", "صورة الملف الشخصي")} ({t("optional", "optionnel", "اختياري")})
                     </label>
                     <div className="space-y-4">
                       {profilePhoto ? (
@@ -235,7 +235,7 @@ const ProviderRegistration = () => {
                         <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
                           <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
                           <p className="text-sm text-muted-foreground mb-2">
-                            {t("Cliquez pour sélectionner une photo", "انقر لتحديد صورة")}
+                            {t("Click to select a photo", "Cliquez pour sélectionner une photo", "انقر لتحديد صورة")}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             JPG, PNG (Max 5MB)
@@ -253,7 +253,7 @@ const ProviderRegistration = () => {
                             className="mt-4"
                             onClick={() => document.getElementById("photo-upload")?.click()}
                           >
-                            {t("Sélectionner une photo", "اختر صورة")}
+                            {t("Select a photo", "Sélectionner une photo", "اختر صورة")}
                           </Button>
                         </div>
                       )}
@@ -266,24 +266,24 @@ const ProviderRegistration = () => {
             {/* Service Information */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("Informations de Service", "معلومات الخدمة")}</CardTitle>
+                <CardTitle>{t("Service Information", "Informations de Service", "معلومات الخدمة")}</CardTitle>
                 <CardDescription>
-                  {t("Décrivez vos services et votre zone d'activité", "صف خدماتك ومنطقة عملك")}
+                  {t("Describe your services and your area of activity", "Décrivez vos services et votre zone d'activité", "صف خدماتك ومنطقة عملك")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    {t("Catégorie de service", "فئة الخدمة")}
+                    {t("Service Category", "Catégorie de service", "فئة الخدمة")}
                   </label>
                   <Select onValueChange={(value) => setValue("category", value)}>
                     <SelectTrigger>
-                      <SelectValue placeholder={t("Sélectionnez une catégorie", "اختر فئة")} />
+                      <SelectValue placeholder={t("Select a category", "Sélectionnez une catégorie", "اختر فئة")} />
                     </SelectTrigger>
                     <SelectContent>
                       {SERVICE_CATEGORIES.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
-                          {language === "fr" ? category.name : category.nameAr}
+                          {language === "en" ? (category.nameEn || category.name) : language === "fr" ? category.name : category.nameAr}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -295,7 +295,7 @@ const ProviderRegistration = () => {
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    {t("Localisation", "الموقع")}
+                    {t("Location", "Localisation", "الموقع")}
                   </label>
                   <Input {...register("location")} placeholder="Tunis, La Marsa" />
                   {errors.location && (
@@ -305,7 +305,7 @@ const ProviderRegistration = () => {
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    {t("Zone de service", "منطقة الخدمة")}
+                    {t("Service Area", "Zone de service", "منطقة الخدمة")}
                   </label>
                   <Input {...register("serviceArea")} placeholder="Tunis et environs" />
                   {errors.serviceArea && (
@@ -315,11 +315,11 @@ const ProviderRegistration = () => {
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    {t("Description", "الوصف")}
+                    {t("Description", "Description", "الوصف")}
                   </label>
                   <Textarea
                     {...register("description")}
-                    placeholder={t("Décrivez vos services et votre expérience...", "صف خدماتك وخبرتك...")}
+                    placeholder={t("Describe your services and experience...", "Décrivez vos services et votre expérience...", "صف خدماتك وخبرتك...")}
                     rows={4}
                   />
                   {errors.description && (
@@ -329,7 +329,7 @@ const ProviderRegistration = () => {
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    {t("Certifications (optionnel)", "الشهادات (اختياري)")}
+                    {t("Certifications (optional)", "Certifications (optionnel)", "الشهادات (اختياري)")}
                   </label>
                   <Input {...register("certifications")} placeholder="Diplôme, certificat..." />
                 </div>
@@ -337,11 +337,11 @@ const ProviderRegistration = () => {
                 {/* Services Description */}
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    {t("Services proposés", "الخدمات المقدمة")}
+                    {t("Services Offered", "Services proposés", "الخدمات المقدمة")}
                   </label>
                   <Textarea
                     {...register("services")}
-                    placeholder={t("Décrivez les services que vous proposez ", "صف الخدمات التي تقدمها)")}
+                    placeholder={t("Describe the services you offer", "Décrivez les services que vous proposez", "صف الخدمات التي تقدمها")}
                     rows={4}
                   />
                   {errors.services && (
@@ -352,7 +352,7 @@ const ProviderRegistration = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      {t("Fourchette de prix", "نطاق الأسعار")}
+                      {t("Price Range", "Fourchette de prix", "نطاق الأسعار")}
                     </label>
                     <Input
                       {...register("priceRange")}
@@ -365,7 +365,7 @@ const ProviderRegistration = () => {
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      {t("Horaires de disponibilité", "أوقات التوفر")}
+                      {t("Availability Hours", "Horaires de disponibilité", "أوقات التوفر")}
                     </label>
                     <Input
                       {...register("availability")}
@@ -382,9 +382,9 @@ const ProviderRegistration = () => {
             {/* Documents (Optional) */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("Documents Justificatifs (Optionnel)", "الوثائق المبررة (اختياري)")}</CardTitle>
+                <CardTitle>{t("Supporting Documents (Optional)", "Documents Justificatifs (Optionnel)", "الوثائق المبررة (اختياري)")}</CardTitle>
                 <CardDescription>
-                  {t("Téléchargez vos documents (CIN, diplôme, certificat...)", "قم بتحميل وثائقك (بطاقة الهوية، الشهادة...)")}
+                  {t("Upload your documents (ID, diploma, certificate...)", "Téléchargez vos documents (CIN, diplôme, certificat...)", "قم بتحميل وثائقك (بطاقة الهوية، الشهادة...)")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -392,7 +392,7 @@ const ProviderRegistration = () => {
                   <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
                     <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
                     <p className="text-sm text-muted-foreground mb-2">
-                      {t("Cliquez pour sélectionner ou glissez-déposez vos fichiers", "انقر للتحديد أو اسحب الملفات")}
+                      {t("Click to select or drag and drop your files", "Cliquez pour sélectionner ou glissez-déposez vos fichiers", "انقر للتحديد أو اسحب الملفات")}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       PDF, JPG, PNG (Max 5 fichiers, 10MB chacun)
@@ -411,7 +411,7 @@ const ProviderRegistration = () => {
                       className="mt-4"
                       onClick={() => document.getElementById("document-upload")?.click()}
                     >
-                      {t("Sélectionner des fichiers", "اختر الملفات")}
+                      {t("Select files", "Sélectionner des fichiers", "اختر الملفات")}
                     </Button>
                   </div>
 
@@ -450,10 +450,10 @@ const ProviderRegistration = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-semibold text-foreground">
-                      {t("Compte Premium", "حساب مميز")}
+                      {t("Premium Account", "Compte Premium", "حساب مميز")}
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      {t("Apparaissez en premier dans les résultats de recherche", "ظهر أولاً في نتائج البحث")}
+                      {t("Appear first in search results", "Apparaissez en premier dans les résultats de recherche", "ظهر أولاً في نتائج البحث")}
                     </p>
                     <p className="text-sm font-medium text-primary mt-1">
                       50 DT/mois
@@ -470,7 +470,7 @@ const ProviderRegistration = () => {
             {/* Submit */}
             <div className="flex justify-center">
               <Button type="submit" size="lg" disabled={isSubmitting} className="px-8">
-                {isSubmitting ? t("Inscription en cours...", "جاري التسجيل...") : t("S'inscrire", "التسجيل")}
+                {isSubmitting ? t("Registering...", "Inscription en cours...", "جاري التسجيل...") : t("Register", "S'inscrire", "التسجيل")}
               </Button>
             </div>
           </form>

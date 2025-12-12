@@ -45,7 +45,7 @@ const ProviderLogin = () => {
           localStorage.setItem("userRole", "admin");
           localStorage.setItem("userEmail", adminData.email);
           localStorage.setItem("token", adminData.token);
-          toast.success("Connexion admin réussie !");
+          toast.success(t("Admin login successful!", "Connexion admin réussie !", "تم تسجيل دخول الإدارة بنجاح!"));
           navigate("/admin");
           return;
         }
@@ -60,7 +60,7 @@ const ProviderLogin = () => {
         localStorage.setItem("userEmail", providerData.email);
         localStorage.setItem("providerData", JSON.stringify(providerData));
         localStorage.setItem("token", providerData.token);
-        toast.success("Connexion réussie !");
+        toast.success(t("Login successful!", "Connexion réussie !", "تم تسجيل الدخول بنجاح!"));
         navigate("/provider-dashboard");
       }
     } catch (error: any) {
@@ -68,16 +68,16 @@ const ProviderLogin = () => {
         // Handle pending or rejected status
         const errorData = error.response.data;
         if (errorData.status === "pending") {
-          toast.error("Votre compte est en attente d'approbation par l'administrateur");
+          toast.error(t("Your account is pending approval by the administrator", "Votre compte est en attente d'approbation par l'administrateur", "حسابك في انتظار الموافقة من قبل المسؤول"));
         } else if (errorData.status === "rejected") {
-          toast.error("Votre compte a été rejeté. Veuillez contacter l'administrateur");
+          toast.error(t("Your account has been rejected. Please contact the administrator", "Votre compte a été rejeté. Veuillez contacter l'administrateur", "تم رفض حسابك. يرجى الاتصال بالمسؤول"));
         } else {
-          toast.error(errorData.message || "Accès refusé");
+          toast.error(errorData.message || t("Access denied", "Accès refusé", "تم رفض الوصول"));
         }
       } else if (error.response?.status === 401) {
-        toast.error("Email ou mot de passe incorrect");
+        toast.error(t("Incorrect email or password", "Email ou mot de passe incorrect", "البريد الإلكتروني أو كلمة المرور غير صحيحة"));
       } else {
-        toast.error("Erreur lors de la connexion");
+        toast.error(t("Error during login", "Erreur lors de la connexion", "خطأ أثناء تسجيل الدخول"));
       }
     } finally {
       setIsLoading(false);
@@ -93,17 +93,17 @@ const ProviderLogin = () => {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">
-                {t("Connexion Prestataire", "دخول المزود")}
+                {t("Provider Login", "Connexion Prestataire", "دخول المزود")}
               </CardTitle>
               <CardDescription>
-                {t("Connectez-vous à votre compte", "سجل الدخول إلى حسابك")}
+                {t("Sign in to your account", "Connectez-vous à votre compte", "سجل الدخول إلى حسابك")}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    {t("Email", "البريد الإلكتروني")}
+                    {t("Email", "Email", "البريد الإلكتروني")}
                   </label>
                   <Input
                     {...register("email")}
@@ -117,7 +117,7 @@ const ProviderLogin = () => {
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    {t("Mot de passe", "كلمة المرور")}
+                    {t("Password", "Mot de passe", "كلمة المرور")}
                   </label>
                   <Input
                     {...register("password")}
@@ -131,29 +131,29 @@ const ProviderLogin = () => {
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   <LogIn className="h-4 w-4 mr-2" />
-                  {isLoading ? t("Connexion...", "جاري الدخول...") : t("Se connecter", "دخول")}
+                  {isLoading ? t("Logging in...", "Connexion...", "جاري الدخول...") : t("Sign in", "Se connecter", "دخول")}
                 </Button>
               </form>
 
               <div className="mt-6 text-center">
                 <p className="text-sm text-muted-foreground mb-4">
-                  {t("Pas encore inscrit ?", "غير مسجل بعد؟")}
+                  {t("Not registered yet?", "Pas encore inscrit ?", "غير مسجل بعد؟")}
                 </p>
                 <Link to="/provider-registration">
                   <Button variant="outline" className="w-full">
                     <UserPlus className="h-4 w-4 mr-2" />
-                    {t("S'inscrire", "التسجيل")}
+                    {t("Register", "S'inscrire", "التسجيل")}
                   </Button>
                 </Link>
               </div>
 
               <div className="mt-6 p-4 bg-muted rounded-lg">
                 <p className="text-sm font-medium mb-2">
-                  {t("Connexion Admin", "دخول الإدارة")}
+                  {t("Admin Login", "Connexion Admin", "دخول الإدارة")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Email: admin@serveeny.tn<br />
-                  Mot de passe: admin123
+                  {t("Email:", "Email:", "البريد الإلكتروني:")} admin@serveeny.tn<br />
+                  {t("Password:", "Mot de passe:", "كلمة المرور:")} admin123
                 </p>
               </div>
             </CardContent>

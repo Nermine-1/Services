@@ -15,7 +15,7 @@ interface ProviderCardProps {
 
 export function ProviderCard({ provider, onViewDetails }: ProviderCardProps) {
   const { toggleFavorite, isFavorite } = useFavorites();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const favorite = isFavorite(provider._id);
   const category = SERVICE_CATEGORIES.find((c) => c.id === provider.category);
 
@@ -104,11 +104,11 @@ export function ProviderCard({ provider, onViewDetails }: ProviderCardProps) {
                   <span className="text-sm font-semibold">{provider.rating}</span>
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  ({provider.reviewCount} {t("avis", "تقييم")})
+                  ({provider.reviewCount} {t("reviews", "avis", "تقييم")})
                 </span>
                 {category && (
                   <Badge variant="secondary" className="text-xs">
-                    {category.name}
+                    {language === "en" ? (category.nameEn || category.name) : language === "fr" ? category.name : category.nameAr}
                   </Badge>
                 )}
               </div>
@@ -127,7 +127,7 @@ export function ProviderCard({ provider, onViewDetails }: ProviderCardProps) {
           {/* Services preview */}
           <div className="mt-3">
             <p className="text-xs text-muted-foreground line-clamp-2">
-              {provider.services ? provider.services.substring(0, 80) + (provider.services.length > 80 ? "..." : "") : "Services non spécifiés"}
+              {provider.services ? provider.services.substring(0, 80) + (provider.services.length > 80 ? "..." : "") : t("Services not specified", "Services non spécifiés", "خدمات غير محددة")}
             </p>
           </div>
 
@@ -141,7 +141,7 @@ export function ProviderCard({ provider, onViewDetails }: ProviderCardProps) {
             </Button>
             <Button variant="call" size="sm" className="flex-1" onClick={handleCall}>
               <Phone className="h-4 w-4" />
-              {t("Appeler", "اتصل")}
+              {t("Call", "Appeler", "اتصل")}
             </Button>
           </div>
         </CardContent>

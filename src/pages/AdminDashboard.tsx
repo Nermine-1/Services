@@ -50,7 +50,7 @@ const AdminDashboard = () => {
     
     if (userRole !== "admin" || !token) {
       console.warn("Admin not authenticated. Redirecting to login...");
-      toast.error("Veuillez vous connecter en tant qu'administrateur");
+      toast.error(t("Please log in as administrator", "Veuillez vous connecter en tant qu'administrateur", "يرجى تسجيل الدخول كمسؤول"));
       navigate("/provider-login");
       return;
     }
@@ -70,9 +70,9 @@ const AdminDashboard = () => {
         console.error("Error fetching pending providers:", error);
         console.error("Error response:", error.response?.data);
         if (error.response?.status === 401 || error.response?.status === 403) {
-          toast.error("Veuillez vous connecter en tant qu'administrateur");
+          toast.error(t("Please log in as administrator", "Veuillez vous connecter en tant qu'administrateur", "يرجى تسجيل الدخول كمسؤول"));
         } else {
-          toast.error("Erreur lors du chargement des demandes");
+          toast.error(t("Error loading requests", "Erreur lors du chargement des demandes", "خطأ في تحميل الطلبات"));
         }
         throw error;
       }
@@ -92,7 +92,7 @@ const AdminDashboard = () => {
   const verifyProviderMutation = useMutation({
     mutationFn: (id: string) => adminApi.verifyProvider(id),
     onSuccess: () => {
-      toast.success("Prestataire vérifié avec succès !");
+      toast.success(t("Provider verified successfully!", "Prestataire vérifié avec succès !", "تم التحقق من المزود بنجاح!"));
       queryClient.invalidateQueries({ queryKey: ["pending-providers"] });
       queryClient.invalidateQueries({ queryKey: ["all-providers"] });
       refetchPending(); // Manually refetch pending providers
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
   const rejectProviderMutation = useMutation({
     mutationFn: (id: string) => adminApi.rejectProvider(id),
     onSuccess: () => {
-      toast.success("Prestataire rejeté");
+      toast.success(t("Provider rejected", "Prestataire rejeté", "تم رفض المزود"));
       queryClient.invalidateQueries({ queryKey: ["pending-providers"] });
       queryClient.invalidateQueries({ queryKey: ["all-providers"] });
       refetchPending(); // Manually refetch pending providers
@@ -141,10 +141,10 @@ const AdminDashboard = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            {t("Tableau de Bord Admin", "لوحة تحكم الإدارة")}
+            {t("Admin Dashboard", "Tableau de Bord Admin", "لوحة تحكم الإدارة")}
           </h1>
           <p className="text-muted-foreground">
-            {t("Gérez les prestataires et consultez les statistiques", "إدارة المزودين وعرض الإحصائيات")}
+            {t("Manage providers and view statistics", "Gérez les prestataires et consultez les statistiques", "إدارة المزودين وعرض الإحصائيات")}
           </p>
         </div>
 
@@ -153,7 +153,7 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t("Prestataires Vérifiés", "المزودون المعتمدون")}
+                {t("Verified Providers", "Prestataires Vérifiés", "المزودون المعتمدون")}
               </CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -168,14 +168,14 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t("En Attente", "في الانتظار")}
+                {t("Pending", "En Attente", "في الانتظار")}
               </CardTitle>
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.pendingVerifications}</div>
               <p className="text-xs text-muted-foreground">
-                {t("À vérifier", "للتحقق")}
+                {t("To verify", "À vérifier", "للتحقق")}
               </p>
             </CardContent>
           </Card>
@@ -183,14 +183,14 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t("Revenus Publicitaires", "إيرادات الإعلانات")}
+                {t("Advertising Revenue", "Revenus Publicitaires", "إيرادات الإعلانات")}
               </CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalRevenue} DT</div>
               <p className="text-xs text-muted-foreground">
-                {stats.activeProviders} {t("prestataires actifs", "مزود نشط")}
+                {stats.activeProviders} {t("active providers", "prestataires actifs", "مزود نشط")}
               </p>
             </CardContent>
           </Card>
@@ -198,14 +198,14 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t("Note Moyenne", "متوسط التقييم")}
+                {t("Average Rating", "Note Moyenne", "متوسط التقييم")}
               </CardTitle>
               <Star className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.averageRating}</div>
               <p className="text-xs text-muted-foreground">
-                {stats.totalReviews} {t("avis totaux", "إجمالي التقييمات")}
+                {stats.totalReviews} {t("total reviews", "avis totaux", "إجمالي التقييمات")}
               </p>
             </CardContent>
           </Card>
@@ -216,14 +216,14 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t("Prestataires Actifs", "المزودون النشطون")}
+                {t("Active Providers", "Prestataires Actifs", "المزودون النشطون")}
               </CardTitle>
               <CheckCircle className="h-4 w-4 text-success" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.activeProviders}</div>
               <p className="text-xs text-muted-foreground">
-                {((stats.activeProviders / Math.max(stats.totalProviders, 1)) * 100).toFixed(0)}% {t("du total", "من المجموع")}
+                {((stats.activeProviders / Math.max(stats.totalProviders, 1)) * 100).toFixed(0)}% {t("of total", "du total", "من المجموع")}
               </p>
             </CardContent>
           </Card>
@@ -231,14 +231,14 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t("Prestataires Premium", "المزودون المميزون")}
+                {t("Premium Providers", "Prestataires Premium", "المزودون المميزون")}
               </CardTitle>
               <Crown className="h-4 w-4 text-amber-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.premiumProviders}</div>
               <p className="text-xs text-muted-foreground">
-                {t("Revenus supplémentaires", "إيرادات إضافية")}
+                {t("Additional revenue", "Revenus supplémentaires", "إيرادات إضافية")}
               </p>
             </CardContent>
           </Card>
@@ -246,14 +246,14 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t("Croissance Mensuelle", "النمو الشهري")}
+                {t("Monthly Growth", "Croissance Mensuelle", "النمو الشهري")}
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">+{stats.monthlyGrowth}%</div>
               <p className="text-xs text-muted-foreground">
-                {t("Nouveaux prestataires", "مزودون جدد")}
+                {t("New providers", "Nouveaux prestataires", "مزودون جدد")}
               </p>
             </CardContent>
           </Card>
@@ -268,11 +268,11 @@ const AdminDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="verified">
               <CheckCircle className="h-4 w-4 mr-2" />
-              {t("Vérifiés", "معتمدون")}
+              {t("Verified", "Vérifiés", "معتمدون")}
             </TabsTrigger>
             <TabsTrigger value="stats">
               <BarChart3 className="h-4 w-4 mr-2" />
-              {t("Statistiques", "إحصائيات")}
+              {t("Statistics", "Statistiques", "الإحصائيات")}
             </TabsTrigger>
           </TabsList>
 
@@ -280,7 +280,7 @@ const AdminDashboard = () => {
           <TabsContent value="pending">
             <Card>
               <CardHeader>
-                <CardTitle>{t("Demandes en Attente de Vérification", "طلبات في انتظار التحقق")}</CardTitle>
+                <CardTitle>{t("Pending Verification Requests", "Demandes en Attente de Vérification", "طلبات في انتظار التحقق")}</CardTitle>
                 <CardDescription>
                   {t("Vérifiez les documents et approuvez les nouveaux prestataires", "تحقق من الوثائق ووافق على المزودين الجدد")}
                 </CardDescription>

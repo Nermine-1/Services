@@ -30,7 +30,7 @@ interface TokenPayload {
 }
 
 const ProviderDashboard = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const [providerId, setProviderId] = useState<string | null>(null);
 
@@ -77,7 +77,7 @@ const ProviderDashboard = () => {
     localStorage.removeItem("userEmail");
     localStorage.removeItem("providerData");
     localStorage.removeItem("token");
-    toast.success("Déconnexion réussie");
+    toast.success(t("Logout successful", "Déconnexion réussie", "تم تسجيل الخروج بنجاح"));
     navigate("/");
   };
 
@@ -86,7 +86,7 @@ const ProviderDashboard = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>{t("Chargement...", "جاري التحميل...")}</p>
+          <p>{t("Loading...", "Chargement...", "جاري التحميل...")}</p>
         </div>
       </div>
     );
@@ -96,9 +96,9 @@ const ProviderDashboard = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-destructive mb-4">{t("Erreur lors du chargement", "خطأ في التحميل")}</p>
+          <p className="text-destructive mb-4">{t("Error loading", "Erreur lors du chargement", "خطأ في التحميل")}</p>
           <Button onClick={() => navigate("/provider-login")}>
-            {t("Retour à la connexion", "العودة إلى تسجيل الدخول")}
+            {t("Back to login", "Retour à la connexion", "العودة إلى تسجيل الدخول")}
           </Button>
         </div>
       </div>
@@ -117,15 +117,15 @@ const ProviderDashboard = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">
-                {t("Mon Espace Prestataire", "مساحة المزود الخاصة بي")}
+                {t("My Provider Space", "Mon Espace Prestataire", "مساحة المزود الخاصة بي")}
               </h1>
               <p className="text-muted-foreground">
-                {t("Bienvenue,", "مرحباً,")} {provider.name}
+                {t("Welcome,", "Bienvenue,", "مرحباً,")} {provider.name}
               </p>
             </div>
             <Button variant="outline" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
-              {t("Déconnexion", "خروج")}
+              {t("Logout", "Déconnexion", "خروج")}
             </Button>
           </div>
 
@@ -134,14 +134,14 @@ const ProviderDashboard = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  {t("Note Moyenne", "متوسط التقييم")}
+                  {t("Average Rating", "Note Moyenne", "متوسط التقييم")}
                 </CardTitle>
                 <Star className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{provider.rating || 0}</div>
                 <p className="text-xs text-muted-foreground">
-                  {provider.reviewCount || 0} {t("avis", "تقييمات")}
+                  {provider.reviewCount || 0} {t("reviews", "avis", "تقييمات")}
                 </p>
               </CardContent>
             </Card>
@@ -149,14 +149,14 @@ const ProviderDashboard = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  {t("Fourchette de prix", "نطاق الأسعار")}
+                  {t("Price Range", "Fourchette de prix", "نطاق الأسعار")}
                 </CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{provider.priceRange || "N/A"}</div>
                 <p className="text-xs text-muted-foreground">
-                  {provider.isPremium ? t("Compte Premium", "حساب مميز") : t("Compte Standard", "حساب عادي")}
+                  {provider.isPremium ? t("Premium Account", "Compte Premium", "حساب مميز") : t("Standard Account", "Compte Standard", "حساب عادي")}
                 </p>
               </CardContent>
             </Card>
@@ -164,22 +164,22 @@ const ProviderDashboard = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  {t("Statut", "الحالة")}
+                  {t("Status", "Statut", "الحالة")}
                 </CardTitle>
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   <Badge variant={provider.status === "verified" ? "default" : "secondary"}>
-                    {provider.status === "verified" ? t("Vérifié", "معتمد") : 
-                     provider.status === "pending" ? t("En attente", "في الانتظار") : 
-                     t("Rejeté", "مرفوض")}
+                    {provider.status === "verified" ? t("Verified", "Vérifié", "معتمد") : 
+                     provider.status === "pending" ? t("Pending", "En attente", "في الانتظار") : 
+                     t("Rejected", "Rejeté", "مرفوض")}
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  {provider.status === "verified" ? t("Actif sur la plateforme", "نشط على المنصة") : 
-                   provider.status === "pending" ? t("En attente d'approbation", "في انتظار الموافقة") : 
-                   t("Compte rejeté", "حساب مرفوض")}
+                  {provider.status === "verified" ? t("Active on platform", "Actif sur la plateforme", "نشط على المنصة") : 
+                   provider.status === "pending" ? t("Awaiting approval", "En attente d'approbation", "في انتظار الموافقة") : 
+                   t("Account rejected", "Compte rejeté", "حساب مرفوض")}
                 </p>
               </CardContent>
             </Card>
@@ -187,13 +187,13 @@ const ProviderDashboard = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  {t("Statut", "الحالة")}
+                  {t("Availability", "Disponibilité", "التوفر")}
                 </CardTitle>
                 <User className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <Badge variant={provider.isAvailable ? "default" : "secondary"}>
-                  {provider.isAvailable ? t("Disponible", "متاح") : t("Indisponible", "غير متاح")}
+                  {provider.isAvailable ? t("Available", "Disponible", "متاح") : t("Unavailable", "Indisponible", "غير متاح")}
                 </Badge>
               </CardContent>
             </Card>
@@ -204,19 +204,19 @@ const ProviderDashboard = () => {
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="profile">
                 <User className="h-4 w-4 mr-2" />
-                {t("Profil", "الملف الشخصي")}
+                {t("Profile", "Profil", "الملف الشخصي")}
               </TabsTrigger>
               <TabsTrigger value="services">
                 <Settings className="h-4 w-4 mr-2" />
-                {t("Services", "الخدمات")}
+                {t("Services", "Services", "الخدمات")}
               </TabsTrigger>
               <TabsTrigger value="requests">
                 <MessageSquare className="h-4 w-4 mr-2" />
-                {t("Demandes", "الطلبات")}
+                {t("Requests", "Demandes", "الطلبات")}
               </TabsTrigger>
               <TabsTrigger value="analytics">
                 <Calendar className="h-4 w-4 mr-2" />
-                {t("Statistiques", "الإحصائيات")}
+                {t("Statistics", "Statistiques", "الإحصائيات")}
               </TabsTrigger>
             </TabsList>
 
@@ -234,7 +234,7 @@ const ProviderDashboard = () => {
                         />
                         <h3 className="text-xl font-semibold">{provider.name}</h3>
                         <Badge variant="secondary" className="mt-2">
-                          {category?.name}
+                          {category ? (language === "en" ? (category.nameEn || category.name) : language === "fr" ? category.name : category.nameAr) : ""}
                         </Badge>
                         <div className="mt-4 space-y-2 text-sm text-muted-foreground">
                           <div className="flex items-center justify-center gap-2">
@@ -258,16 +258,16 @@ const ProviderDashboard = () => {
                 <div className="lg:col-span-2">
                   <Card>
                     <CardHeader>
-                      <CardTitle>{t("Informations Détaillées", "المعلومات التفصيلية")}</CardTitle>
+                      <CardTitle>{t("Detailed Information", "Informations Détaillées", "المعلومات التفصيلية")}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
-                        <h4 className="font-medium mb-2">{t("Description", "الوصف")}</h4>
+                        <h4 className="font-medium mb-2">{t("Description", "Description", "الوصف")}</h4>
                         <p className="text-sm text-muted-foreground">{provider.description}</p>
                       </div>
 
                       <div>
-                        <h4 className="font-medium mb-2">{t("Services Proposés", "الخدمات المقدمة")}</h4>
+                        <h4 className="font-medium mb-2">{t("Services Offered", "Services Proposés", "الخدمات المقدمة")}</h4>
                         <div className="p-3 bg-muted/50 rounded-lg">
                           <p className="text-sm text-foreground whitespace-pre-line">
                             {provider.services}
@@ -277,19 +277,19 @@ const ProviderDashboard = () => {
 
                       {provider.serviceArea && (
                         <div>
-                          <h4 className="font-medium mb-2">{t("Zone de Service", "منطقة الخدمة")}</h4>
+                          <h4 className="font-medium mb-2">{t("Service Area", "Zone de Service", "منطقة الخدمة")}</h4>
                           <p className="text-sm text-muted-foreground">{provider.serviceArea}</p>
                         </div>
                       )}
 
                       <div>
-                        <h4 className="font-medium mb-2">{t("Disponibilité", "التوفر")}</h4>
+                        <h4 className="font-medium mb-2">{t("Availability", "Disponibilité", "التوفر")}</h4>
                         <p className="text-sm text-muted-foreground">{provider.availability}</p>
                       </div>
 
                       {provider.certifications && (
                         <div>
-                          <h4 className="font-medium mb-2">{t("Certifications", "الشهادات")}</h4>
+                          <h4 className="font-medium mb-2">{t("Certifications", "Certifications", "الشهادات")}</h4>
                           <p className="text-sm text-muted-foreground">{provider.certifications}</p>
                         </div>
                       )}
@@ -303,9 +303,9 @@ const ProviderDashboard = () => {
             <TabsContent value="services">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("Gestion des Services", "إدارة الخدمات")}</CardTitle>
+                  <CardTitle>{t("Service Management", "Gestion des Services", "إدارة الخدمات")}</CardTitle>
                   <CardDescription>
-                    {t("Modifiez vos services et tarifs", "عدل خدماتك وأسعارك")}
+                    {t("Modify your services and rates", "Modifiez vos services et tarifs", "عدل خدماتك وأسعارك")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -313,22 +313,22 @@ const ProviderDashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="text-sm font-medium mb-2 block">
-                          {t("Prix par défaut", "السعر الافتراضي")}
+                          {t("Default Price", "Prix par défaut", "السعر الافتراضي")}
                         </label>
                         <p className="text-sm text-muted-foreground">{provider.priceRange}</p>
                       </div>
                       <div>
                         <label className="text-sm font-medium mb-2 block">
-                          {t("Statut de disponibilité", "حالة التوفر")}
+                          {t("Availability Status", "Statut de disponibilité", "حالة التوفر")}
                         </label>
                         <Badge variant={provider.isAvailable ? "default" : "secondary"}>
-                          {provider.isAvailable ? t("Disponible", "متاح") : t("Indisponible", "غير متاح")}
+                          {provider.isAvailable ? t("Available", "Disponible", "متاح") : t("Unavailable", "Indisponible", "غير متاح")}
                         </Badge>
                       </div>
                     </div>
 
                     <Button className="w-full md:w-auto">
-                      {t("Modifier mes services", "تعديل خدماتي")}
+                      {t("Modify my services", "Modifier mes services", "تعديل خدماتي")}
                     </Button>
                   </div>
                 </CardContent>
@@ -339,16 +339,16 @@ const ProviderDashboard = () => {
             <TabsContent value="requests">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("Demandes Clients", "طلبات العملاء")}</CardTitle>
+                  <CardTitle>{t("Client Requests", "Demandes Clients", "طلبات العملاء")}</CardTitle>
                   <CardDescription>
-                    {t("Gérez vos demandes de service", "إدارة طلبات الخدمة")}
+                    {t("Manage your service requests", "Gérez vos demandes de service", "إدارة طلبات الخدمة")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-8">
                     <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <p className="text-muted-foreground">
-                      {t("Aucune demande pour le moment", "لا توجد طلبات في الوقت الحالي")}
+                      {t("No requests at the moment", "Aucune demande pour le moment", "لا توجد طلبات في الوقت الحالي")}
                     </p>
                   </div>
                 </CardContent>
@@ -360,27 +360,27 @@ const ProviderDashboard = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>{t("Informations de Service", "معلومات الخدمة")}</CardTitle>
+                    <CardTitle>{t("Service Information", "Informations de Service", "معلومات الخدمة")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">{t("Localisation", "الموقع")}</span>
+                        <span className="text-sm">{t("Location", "Localisation", "الموقع")}</span>
                         <span className="font-medium">{provider.location}</span>
                       </div>
                       {provider.serviceArea && (
                         <div className="flex justify-between items-center">
-                          <span className="text-sm">{t("Zone de service", "منطقة الخدمة")}</span>
+                          <span className="text-sm">{t("Service Area", "Zone de service", "منطقة الخدمة")}</span>
                           <span className="font-medium">{provider.serviceArea}</span>
                         </div>
                       )}
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">{t("Fourchette de prix", "نطاق الأسعار")}</span>
-                        <span className="font-medium">{provider.priceRange || t("Non spécifié", "غير محدد")}</span>
+                        <span className="text-sm">{t("Price Range", "Fourchette de prix", "نطاق الأسعار")}</span>
+                        <span className="font-medium">{provider.priceRange || t("Not specified", "Non spécifié", "غير محدد")}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">{t("Disponibilité", "التوفر")}</span>
-                        <span className="font-medium text-xs">{provider.availability || t("Non spécifié", "غير محدد")}</span>
+                        <span className="text-sm">{t("Availability", "Disponibilité", "التوفر")}</span>
+                        <span className="font-medium text-xs">{provider.availability || t("Not specified", "Non spécifié", "غير محدد")}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -388,23 +388,23 @@ const ProviderDashboard = () => {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>{t("Évaluations", "التقييمات")}</CardTitle>
+                    <CardTitle>{t("Reviews", "Évaluations", "التقييمات")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">{t("Note moyenne", "متوسط التقييم")}</span>
+                        <span className="text-sm">{t("Average rating", "Note moyenne", "متوسط التقييم")}</span>
                         <div className="flex items-center gap-1">
                           <Star className="h-4 w-4 fill-current text-yellow-500" />
                           <span className="font-medium">{provider.rating || 0}</span>
                         </div>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">{t("Nombre d'avis", "عدد التقييمات")}</span>
+                        <span className="text-sm">{t("Number of reviews", "Nombre d'avis", "عدد التقييمات")}</span>
                         <span className="font-medium">{provider.reviewCount || 0}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">{t("Satisfaction client", "رضا العميل")}</span>
+                        <span className="text-sm">{t("Client satisfaction", "Satisfaction client", "رضا العميل")}</span>
                         <span className="font-medium">85%</span>
                       </div>
                     </div>

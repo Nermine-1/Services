@@ -50,11 +50,11 @@ export function FeaturedProviders({ onViewDetails }: FeaturedProvidersProps) {
             <div className="flex items-center gap-2 mb-2">
               <Crown className="h-5 w-5 text-amber-500" />
               <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
-                {t("Prestataires vedettes", "مزودون مميزون")}
+                {t("Featured Providers", "Prestataires vedettes", "مزودون مميزون")}
               </span>
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-              {t("Les plus recommandés", "الأكثر توصية")}
+              {t("Most Recommended", "Les plus recommandés", "الأكثر توصية")}
             </h2>
           </div>
 

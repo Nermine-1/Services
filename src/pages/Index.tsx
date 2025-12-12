@@ -103,10 +103,10 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">
-                  {t("Mes favoris", "المفضلة")}
+                  {t("My Favorites", "Mes favoris", "المفضلة")}
                 </h1>
                 <p className="text-muted-foreground">
-                  {favoriteProviders.length} {t("prestataires sauvegardés", "مزود محفوظ")}
+                  {favoriteProviders.length} {t("saved providers", "prestataires sauvegardés", "مزود محفوظ")}
                 </p>
               </div>
             </div>
@@ -127,10 +127,11 @@ const Index = () => {
                   <Heart className="h-10 w-10 text-muted-foreground" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {t("Aucun favori", "لا يوجد مفضلات")}
+                  {t("No favorites", "Aucun favori", "لا يوجد مفضلات")}
                 </h3>
                 <p className="text-muted-foreground max-w-sm">
                   {t(
+                    "Add providers to your favorites to find them easily.",
                     "Ajoutez des prestataires à vos favoris pour les retrouver facilement.",
                     "أضف مزودي خدمات إلى المفضلة للعثور عليهم بسهولة."
                   )}
@@ -149,10 +150,10 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">
-                  {t("Mon profil", "ملفي الشخصي")}
+                  {t("My Profile", "Mon profil", "ملفي الشخصي")}
                 </h1>
                 <p className="text-muted-foreground">
-                  {t("Gérez votre compte", "إدارة حسابك")}
+                  {t("Manage your account", "Gérez votre compte", "إدارة حسابك")}
                 </p>
               </div>
             </div>
@@ -161,10 +162,11 @@ const Index = () => {
               <div className="bg-card rounded-2xl border border-border p-6">
                 <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                   <Settings className="h-5 w-5" />
-                  {t("Paramètres", "الإعدادات")}
+                  {t("Settings", "Paramètres", "الإعدادات")}
                 </h2>
                 <p className="text-muted-foreground text-sm">
                   {t(
+                    "Sign in to access all features.",
                     "Connectez-vous pour accéder à toutes les fonctionnalités.",
                     "سجّل الدخول للوصول إلى جميع الميزات."
                   )}
@@ -173,10 +175,11 @@ const Index = () => {
 
               <div className="bg-gradient-card rounded-2xl border border-primary/20 p-6">
                 <h2 className="font-semibold text-foreground mb-2">
-                  {t("Devenez prestataire", "كن مزود خدمة")}
+                  {t("Become a Provider", "Devenez prestataire", "كن مزود خدمة")}
                 </h2>
                 <p className="text-muted-foreground text-sm mb-4">
                   {t(
+                    "Join our network and grow your business.",
                     "Rejoignez notre réseau et développez votre activité.",
                     "انضم إلى شبكتنا وطوّر نشاطك."
                   )}
@@ -186,13 +189,13 @@ const Index = () => {
                     onClick={() => navigate('/provider-registration')}
                     className="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors flex-1"
                   >
-                    {t("S'inscrire", "التسجيل")}
+                    {t("Register", "S'inscrire", "التسجيل")}
                   </button>
                   <button
                     onClick={() => navigate('/provider-login')}
                     className="border border-primary text-primary px-4 py-2 rounded-lg font-medium hover:bg-primary/10 transition-colors flex-1"
                   >
-                    {t("Se connecter", "دخول")}
+                    {t("Sign in", "Se connecter", "دخول")}
                   </button>
                 </div>
               </div>

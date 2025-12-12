@@ -14,10 +14,10 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   const { favorites } = useFavorites();
 
   const tabs = [
-    { id: "home", icon: Home, label: t("Accueil", "الرئيسية") },
-    { id: "categories", icon: Grid3X3, label: t("Catégories", "الفئات") },
-    { id: "favorites", icon: Heart, label: t("Favoris", "المفضلة"), badge: favorites.length },
-    { id: "profile", icon: User, label: t("Profil", "الملف") },
+    { id: "home", icon: Home, label: t("Home", "Accueil", "الرئيسية") },
+    { id: "categories", icon: Grid3X3, label: t("Categories", "Catégories", "الفئات") },
+    { id: "favorites", icon: Heart, label: t("Favorites", "Favoris", "المفضلة"), badge: favorites.length },
+    { id: "profile", icon: User, label: t("Profile", "Profil", "الملف") },
   ];
 
   return (
